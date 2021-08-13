@@ -8,6 +8,7 @@ import (
 // Packet is packet of one request
 type Packet struct {
 	Header                 Header                      `json:"header,omitempty"`                  // request Header
+	Action                 Action                      `json:"action,omitempty"`                  // request action
 	ConnectionState        string                      `json:"connection_state,omitempty"`        // connect state, only set when connect or disconnect
 	TransmissionStates     []TransmissionStateInfo     `json:"transmission_states,omitempty"`     // transmission states
 	TransmissionOperations []TransmissionOperationInfo `json:"transmission_operations,omitempty"` // transmission operation information
