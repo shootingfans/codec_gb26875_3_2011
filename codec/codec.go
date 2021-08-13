@@ -15,6 +15,7 @@ var (
 	ErrPacketInvalid         = errors.New("packet invalid")          // packet is invalid
 	ErrPacketNotEnough       = errors.New("packet not enough")       // packet data not enough
 	ErrPacketChecksumInvalid = errors.New("packet checksum invalid") // packet checksum invalid
+	defaultCodec             = myCodec{}
 )
 
 const (
@@ -24,18 +25,61 @@ const (
 	DefaultTailLength int  = 3    // packet tail length check sum 1byte + tail flag 2byte
 )
 
+// Encode is encoded GB26875.3-2011 packet to bytes
+func Encode(packet *constant.Packet) ([]byte, error) {
+	return defaultCodec.Encode(packet)
+}
+
+// Decode is decoded bytes to GB26875.3-2011 packet
+func Decode(b []byte) (*constant.Packet, int, error) {
+	return defaultCodec.Decode(b)
+}
+
+// Encoder is encoded packet to bytes
 type Encoder interface {
 	Encode(packet *constant.Packet) ([]byte, error)
 }
 
+// Decoder is decoded bytes to packet GB26875.3-2011
 type Decoder interface {
 	Decode(b []byte) (*constant.Packet, int, error)
 }
 
+// Codec is Encoder and Decoder of GB26875.3-2011
 type Codec interface {
 	Encoder
 	Decoder
 }
+
+// AppDecoder is app data decoder
+type AppDecoder interface {
+	Decode(b []byte, packet *constant.Packet)
+}
+
+type AppDataDecoder func(b []byte, packet *constant.Packet)
+
+func (a AppDataDecoder) Decode(b []byte, packet *constant.Packet) {
+	a(b, packet)
+}
+
+var (
+	// typeDecoders define decoder of all app type
+	typeDecoders = map[constant.AppType]AppDecoder{
+		constant.AppTypeOfUploadSystemState:                      AppDataDecoder(decodeUploadSystemState),
+		constant.AppTypeOfUploadEquipmentState:                   AppDataDecoder(decodeUploadEquipmentState),
+		constant.AppTypeOfUploadEquipmentParameter:               AppDataDecoder(decodeUploadEquipmentParameter),
+		constant.AppTypeOfUploadSystemOperatingInformation:       AppDataDecoder(decodeUploadSystemOperatingInformation),
+		constant.AppTypeOfUploadSystemSoftwareVersion:            AppDataDecoder(decodeUploadSystemSoftwareVersion),
+		constant.AppTypeOfUploadSystemConfigure:                  AppDataDecoder(decodeUploadSystemConfigure),
+		constant.AppTypeOfUploadEquipmentConfigure:               AppDataDecoder(decodeUploadEquipmentConfigure),
+		constant.AppTypeOfUploadSystemTime:                       AppDataDecoder(decodeUploadSystemTime),
+		constant.AppTypeOfUploadTransmissionState:                AppDataDecoder(decodeUploadTransmissionState),
+		constant.AppTypeOfUploadTransmissionOperatingInformation: AppDataDecoder(decodeUploadTransmissionOperatingInformation),
+		constant.AppTypeOfUploadTransmissionSoftwareVersion:      AppDataDecoder(decodeUploadTransmissionSoftwareVersion),
+		constant.AppTypeOfUploadTransmissionConfigure:            AppDataDecoder(decodeUploadTransmissionConfigure),
+		constant.AppTypeOfUploadTransmissionTime:                 AppDataDecoder(decodeUploadTransmissionTime),
+	}
+)
 
 type myCodec struct{}
 
@@ -102,5 +146,194 @@ func (m myCodec) Decode(b []byte) (*constant.Packet, int, error) {
 	packet.Header.Source = binary.LittleEndian.Uint64(address)
 	copy(address[0:6], b[18:24])
 	packet.Header.Target = binary.LittleEndian.Uint64(address)
+	switch packet.Action {
+	case constant.ActionOfSendData, constant.ActionOfResponse:
+		DecodeAppData(&packet)
+	}
 	return &packet, packetLength, nil
+}
+
+// DecodeAppData decode the application data
+func DecodeAppData(packet *constant.Packet) {
+	if len(packet.AppData) < 2 {
+		return
+	}
+	appType, count := constant.AppType(packet.AppData[0]), int(packet.AppData[1])
+	decoder, ok := typeDecoders[appType]
+	if !ok {
+		return
+	}
+	perLength := (len(packet.AppData) - 2) / count
+	for i := 0; i < count; i++ {
+		decoder.Decode(packet.AppData[2+i*perLength:2+i*perLength+perLength], packet)
+	}
+	return
+}
+
+// RegistryAppDecoder registry app decoder
+func RegistryAppDecoder(tp constant.AppType, fn AppDecoder) (overwrite bool) {
+	_, overwrite = typeDecoders[tp]
+	typeDecoders[tp] = fn
+	return
+}
+
+// decodeUploadSystemState decode upload system state
+func decodeUploadSystemState(b []byte, packet *constant.Packet) {
+	if len(b) < 10 {
+		return
+	}
+	packet.ControllerStates = append(packet.ControllerStates, constant.ControllerStateInfo{
+		Ctrl:      constant.Controller{Type: constant.ControllerType(b[0]), Addr: int(b[1])},
+		Flag:      constant.StateFlag(binary.LittleEndian.Uint16(b[2:4])),
+		Timestamp: utils.Bytes2Timestamp(b[4:10]),
+	})
+}
+
+// decodeUploadEquipmentState decode upload equipment state
+func decodeUploadEquipmentState(b []byte, packet *constant.Packet) {
+	if len(b) < 46 {
+		return
+	}
+	packet.EquipmentStates = append(packet.EquipmentStates, constant.EquipmentStateInfo{
+		Equ: constant.Equipment{
+			Ctrl: constant.Controller{Type: constant.ControllerType(b[0]), Addr: int(b[1])},
+			Type: constant.EquipmentType(b[2]),
+			Addr: constant.EquipmentAddr(binary.LittleEndian.Uint32(b[3:7])),
+		},
+		Flag:        constant.StateFlag(binary.LittleEndian.Uint16(b[7:9])),
+		Description: utils.B2S(utils.DecodeGB18030(b[9:40])),
+		Timestamp:   utils.Bytes2Timestamp(b[40:46]),
+	})
+}
+
+// decodeUploadEquipmentParameter decode upload equipment parameter
+func decodeUploadEquipmentParameter(b []byte, packet *constant.Packet) {
+	if len(b) < 16 {
+		return
+	}
+	packet.EquipmentParameters = append(packet.EquipmentParameters, constant.EquipmentParameterInfo{
+		Equ: constant.Equipment{
+			Ctrl: constant.Controller{Type: constant.ControllerType(b[0]), Addr: int(b[1])},
+			Type: constant.EquipmentType(b[2]),
+			Addr: constant.EquipmentAddr(binary.LittleEndian.Uint32(b[3:7])),
+		},
+		Info:      constant.ParameterInfo{Type: constant.ParameterType(b[7]), Value: constant.NewParameterValue(b[8:10])},
+		Timestamp: utils.Bytes2Timestamp(b[10:16]),
+	})
+}
+
+// decodeUploadSystemOperatingInformation decode upload system operating information
+func decodeUploadSystemOperatingInformation(b []byte, packet *constant.Packet) {
+	if len(b) < 10 {
+		return
+	}
+	packet.ControllerOperations = append(packet.ControllerOperations, constant.ControllerOperationInfo{
+		Ctrl:      constant.Controller{Type: constant.ControllerType(b[0]), Addr: int(b[1])},
+		Flag:      constant.OperationFlag(b[2]),
+		Operator:  int(b[3]),
+		Timestamp: utils.Bytes2Timestamp(b[4:10]),
+	})
+}
+
+// decodeUploadSystemSoftwareVersion decode upload software version
+func decodeUploadSystemSoftwareVersion(b []byte, packet *constant.Packet) {
+	if len(b) < 4 {
+		return
+	}
+	packet.ControllerVersions = append(packet.ControllerVersions, constant.ControllerVersion{
+		Ctrl:    constant.Controller{Type: constant.ControllerType(b[0]), Addr: int(b[1])},
+		Version: constant.Version(binary.BigEndian.Uint16(b[2:4])),
+	})
+}
+
+// decodeUploadSystemConfigure decode upload system configure
+func decodeUploadSystemConfigure(b []byte, packet *constant.Packet) {
+	if len(b) < 3 {
+		return
+	}
+	length := int(b[2])
+	if len(b) < 3+length {
+		return
+	}
+	packet.ControllerConfigures = append(packet.ControllerConfigures, constant.ControllerConfigure{
+		Ctrl:      constant.Controller{Type: constant.ControllerType(b[0]), Addr: int(b[1])},
+		Configure: utils.B2S(utils.DecodeGB18030(b[3 : 3+length])),
+	})
+}
+
+// decodeUploadEquipmentConfigure decode upload equipment configure
+func decodeUploadEquipmentConfigure(b []byte, packet *constant.Packet) {
+	if len(b) < 38 {
+		return
+	}
+	packet.EquipmentConfigures = append(packet.EquipmentConfigures, constant.EquipmentConfigure{
+		Equ: constant.Equipment{
+			Ctrl: constant.Controller{Type: constant.ControllerType(b[0]), Addr: int(b[1])},
+			Type: constant.EquipmentType(b[2]),
+			Addr: constant.EquipmentAddr(binary.LittleEndian.Uint32(b[3:7])),
+		},
+		Description: utils.B2S(utils.DecodeGB18030(b[7:38])),
+	})
+}
+
+// decodeUploadSystemTime decode upload system time
+func decodeUploadSystemTime(b []byte, packet *constant.Packet) {
+	if len(b) < 8 {
+		return
+	}
+	packet.ControllerTimestamps = append(packet.ControllerTimestamps, constant.ControllerTimestamp{
+		Ctrl:      constant.Controller{Type: constant.ControllerType(b[0]), Addr: int(b[1])},
+		Timestamp: utils.Bytes2Timestamp(b[2:8]),
+	})
+}
+
+// decodeUploadTransmissionState decode upload transmission state
+func decodeUploadTransmissionState(b []byte, packet *constant.Packet) {
+	if len(b) < 7 {
+		return
+	}
+	packet.TransmissionStates = append(packet.TransmissionStates, constant.TransmissionStateInfo{
+		Flag:      constant.StateFlag(b[0]),
+		Timestamp: utils.Bytes2Timestamp(b[1:7]),
+	})
+}
+
+// decodeUploadTransmissionOperatingInformation decode upload transmission operating information
+func decodeUploadTransmissionOperatingInformation(b []byte, packet *constant.Packet) {
+	if len(b) < 8 {
+		return
+	}
+	packet.TransmissionOperations = append(packet.TransmissionOperations, constant.TransmissionOperationInfo{
+		Flag:      constant.OperationFlag(b[0]),
+		Operator:  int(b[1]),
+		Timestamp: utils.Bytes2Timestamp(b[2:8]),
+	})
+}
+
+// decodeUploadTransmissionSoftwareVersion upload transmission software version
+func decodeUploadTransmissionSoftwareVersion(b []byte, packet *constant.Packet) {
+	if len(b) < 2 {
+		return
+	}
+	packet.TransmissionVersions = append(packet.TransmissionVersions, constant.TransmissionVersion{Version: constant.Version(binary.BigEndian.Uint16(b[0:2]))})
+}
+
+// decodeUploadTransmissionConfigure decode upload transmission configure
+func decodeUploadTransmissionConfigure(b []byte, packet *constant.Packet) {
+	if len(b) < 1 {
+		return
+	}
+	length := int(b[0])
+	if len(b) < length+1 {
+		return
+	}
+	packet.TransmissionConfigures = append(packet.TransmissionConfigures, constant.TransmissionConfigure{Configure: utils.B2S(utils.DecodeGB18030(b[1 : 1+length]))})
+}
+
+// decodeUploadTransmissionTime decode upload transmission time
+func decodeUploadTransmissionTime(b []byte, packet *constant.Packet) {
+	if len(b) < 6 {
+		return
+	}
+	packet.TransmissionTimestamps = append(packet.TransmissionTimestamps, constant.TransmissionTimestamp{Timestamp: utils.Bytes2Timestamp(b[0:6])})
 }
