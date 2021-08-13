@@ -4,6 +4,7 @@ package utils
 import (
 	"bytes"
 	"encoding/binary"
+	"time"
 	"unsafe"
 
 	"golang.org/x/text/encoding/simplifiedchinese"
@@ -68,4 +69,18 @@ func (s SumResult) Equal(want []byte, order binary.ByteOrder) bool {
 	default:
 		return false
 	}
+}
+
+// Bytes2Timestamp is convert bytes to second timestamp
+func Bytes2Timestamp(b []byte) int64 {
+	if len(b) < 6 {
+		b = append(make([]byte, 6-len(b)), b...)
+	}
+	return time.Date(2000+int(b[5]), time.Month(int(b[4])), int(b[3]), int(b[2]), int(b[1]), int(b[0]), 0, time.Local).Unix()
+}
+
+// Timestamp2Bytes is convert second timestamp to bytes
+func Timestamp2Bytes(timestamp int64) []byte {
+	tm := time.Unix(timestamp, 0)
+	return []byte{uint8(tm.Second()), uint8(tm.Minute()), uint8(tm.Hour()), uint8(tm.Day()), uint8(tm.Month()), uint8(tm.Year() - 2000)}
 }

@@ -3,6 +3,7 @@ package utils_test
 import (
 	"encoding/binary"
 	"testing"
+	"time"
 
 	"github.com/shootingfans/codec_gb26875_3_2011/utils"
 
@@ -45,4 +46,16 @@ func TestSum(t *testing.T) {
 	t.Run("test other length", func(t *testing.T) {
 		assert.False(t, res.Equal([]byte{}, binary.BigEndian))
 	})
+}
+
+func TestTimestamp2Bytes(t *testing.T) {
+	tm1 := time.Date(2021, 1, 3, 15, 30, 41, 0, time.Local)
+	assert.Equal(t, utils.Timestamp2Bytes(tm1.Unix()), []byte{41, 30, 15, 3, 1, 21})
+}
+
+func TestBytes2Timestamp(t *testing.T) {
+	by := []byte{0, 0, 15, 3, 1, 21}
+	tm := time.Date(2021, 1, 3, 15, 0, 0, 0, time.Local)
+	assert.Equal(t, utils.Bytes2Timestamp(by), tm.Unix())
+	assert.Equal(t, utils.Bytes2Timestamp(by[2:]), tm.Unix())
 }
