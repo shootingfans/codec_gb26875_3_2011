@@ -25,6 +25,7 @@ type Packet struct {
 	EquipmentParameters    []EquipmentParameterInfo    `json:"equipment_parameters,omitempty"`    // equipment parameters
 	EquipmentConfigures    []EquipmentConfigure        `json:"equipment_configures,omitempty"`    // equipment configure
 	Others                 []interface{}               `json:"others,omitempty"`                  // other custom information
+	AppData                []byte                      `json:"app_data,omitempty"`                // app raw data
 }
 
 // IsEmpty is whether packet empty
