@@ -118,7 +118,7 @@ func (m myCodec) Decode(b []byte) (*constant.Packet, int, error) {
 		return nil, 0, ErrPacketNotEnough
 	}
 	if b[0] != HeadFlag || b[1] != HeadFlag {
-		return nil, 2, fmt.Errorf("%w : head flag %v invalid", ErrPacketInvalid, b[0:2])
+		return nil, 1, fmt.Errorf("%w : head flag %v invalid", ErrPacketInvalid, b[0:2])
 	}
 	// data length = action + app data
 	dataLength := int(binary.LittleEndian.Uint16(b[24:26])) + 1
