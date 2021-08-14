@@ -2,10 +2,11 @@ package codec
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
+	"time"
 
 	"github.com/shootingfans/codec_gb26875_3_2011/constant"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEncode(t *testing.T) {
@@ -461,4 +462,307 @@ func TestDecodeAppData(t *testing.T) {
 			assert.EqualValues(t, p.TransmissionTimestamps, []constant.TransmissionTimestamp{{Timestamp: 1625187605}})
 		})
 	})
+}
+
+func TestNewQuerySystemStateAppData(t *testing.T) {
+	type args struct {
+		controllers []constant.Controller
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test empty", args: args{}, want: nil},
+		{name: "test one controller", args: args{controllers: []constant.Controller{{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}}}, want: []byte{0x3d, 0x01, 0x01, 0x01}},
+		{name: "test more controllers", args: args{controllers: []constant.Controller{{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, {Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 2}}}, want: []byte{0x3d, 0x02, 0x01, 0x01, 0x0d, 0x02}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQuerySystemStateAppData(tt.args.controllers...), tt.want)
+		})
+	}
+}
+
+func TestNewQueryEquipmentStateAppData(t *testing.T) {
+	type args struct {
+		equipments []constant.Equipment
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test empty", args: args{}, want: nil},
+		{name: "test one equipment", args: args{equipments: []constant.Equipment{
+			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+		}}, want: []byte{0x3e, 0x01, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01}},
+		{name: "test more equipments", args: args{equipments: []constant.Equipment{
+			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Type: constant.EquipmentTypeOfSmokeFireDetector, Addr: 0x12345678},
+		}}, want: []byte{0x3e, 0x02, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01, 0x0d, 0x03, 0x78, 0x56, 0x34, 0x12}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQueryEquipmentStateAppData(tt.args.equipments...), tt.want)
+		})
+	}
+}
+
+func TestNewQueryEquipmentParameterAppData(t *testing.T) {
+	type args struct {
+		equipments []constant.Equipment
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test empty", args: args{}, want: nil},
+		{name: "test one equipment", args: args{equipments: []constant.Equipment{
+			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+		}}, want: []byte{0x3f, 0x01, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01}},
+		{name: "test more equipments", args: args{equipments: []constant.Equipment{
+			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Type: constant.EquipmentTypeOfSmokeFireDetector, Addr: 0x12345678},
+		}}, want: []byte{0x3f, 0x02, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01, 0x0d, 0x03, 0x78, 0x56, 0x34, 0x12}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQueryEquipmentParameterAppData(tt.args.equipments...), tt.want)
+		})
+	}
+}
+
+func TestNewQuerySystemOperatingInformationAppData(t *testing.T) {
+	type args struct {
+		controller constant.Controller
+		total      int
+		startTime  time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test total 10 time start 2021-07-02 00:00:00", args: args{controller: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x01}, total: 10, startTime: time.Unix(1625155200, 0)},
+			want: []byte{0x40, 0x01, 0x01, 0x01, 0x0a, 0x00, 0x00, 0x00, 0x02, 0x07, 0x15}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQuerySystemOperatingInformationAppData(tt.args.controller, tt.args.total, tt.args.startTime), tt.want)
+		})
+	}
+}
+
+func TestNewQuerySystemSoftwareVersionAppData(t *testing.T) {
+	type args struct {
+		controller constant.Controller
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test 1", args: args{controller: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x02}}, want: []byte{0x41, 0x01, 0x01, 0x02}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQuerySystemSoftwareVersionAppData(tt.args.controller), tt.want)
+		})
+	}
+}
+
+func TestNewQuerySystemConfigureAppData(t *testing.T) {
+	type args struct {
+		controllers []constant.Controller
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test empty", args: args{}, want: nil},
+		{name: "test one", args: args{controllers: []constant.Controller{
+			{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x03},
+		}}, want: []byte{0x42, 0x01, 0x01, 0x03}},
+		{name: "test more", args: args{controllers: []constant.Controller{
+			{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x03},
+			{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 0x02},
+		}}, want: []byte{0x42, 0x02, 0x01, 0x03, 0x0d, 0x02}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQuerySystemConfigureAppData(tt.args.controllers...), tt.want)
+		})
+	}
+}
+
+func TestNewQueryEquipmentConfigureAppData(t *testing.T) {
+	type args struct {
+		equipments []constant.Equipment
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test empty", args: args{}, want: nil},
+		{name: "test one", args: args{equipments: []constant.Equipment{
+			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.EquipmentTypeOfAlarmDevice},
+		}}, want: []byte{0x43, 0x01, 0x01, 0x01, 0x78, 0x56, 0x34, 0x12}},
+		{name: "test more", args: args{equipments: []constant.Equipment{
+			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.EquipmentTypeOfAlarmDevice},
+			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 0x03}, Addr: constant.EquipmentAddr(0x01020304), Type: constant.EquipmentTypeOfGasDetector},
+		}}, want: []byte{0x43, 0x02, 0x01, 0x01, 0x78, 0x56, 0x34, 0x12, 0x0d, 0x03, 0x04, 0x03, 0x02, 0x01}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQueryEquipmentConfigureAppData(tt.args.equipments...), tt.want)
+		})
+	}
+}
+
+func TestNewQuerySystemTimeAppData(t *testing.T) {
+	type args struct {
+		controller constant.Controller
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test", args: args{controller: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x03}}, want: []byte{0x44, 0x01, 0x01, 0x03}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQuerySystemTimeAppData(tt.args.controller), tt.want)
+		})
+	}
+}
+
+func TestNewQueryTransmissionStateAppData(t *testing.T) {
+	tests := []struct {
+		name string
+		want []byte
+	}{
+		{name: "test", want: []byte{0x51, 0x01, 0x00}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQueryTransmissionStateAppData(), tt.want)
+		})
+	}
+}
+
+func TestNewQueryTransmissionOperatingInformationAppData(t *testing.T) {
+	type args struct {
+		total     int
+		startTime time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test total 16 startTime 2021-07-02 09:00:04", args: args{total: 16, startTime: time.Unix(1625187604, 0)}, want: []byte{0x54, 0x01, 0x10, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQueryTransmissionOperatingInformationAppData(tt.args.total, tt.args.startTime), tt.want)
+		})
+	}
+}
+
+func TestNewQueryTransmissionSoftwareVersionAppData(t *testing.T) {
+	tests := []struct {
+		name string
+		want []byte
+	}{
+		{name: "test", want: []byte{0x55, 0x01, 0x00}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQueryTransmissionSoftwareVersionAppData(), tt.want)
+		})
+	}
+}
+
+func TestNewQueryTransmissionConfigureAppData(t *testing.T) {
+	tests := []struct {
+		name string
+		want []byte
+	}{
+		{name: "test", want: []byte{0x56, 0x01, 0x00}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQueryTransmissionConfigureAppData(), tt.want)
+		})
+	}
+}
+
+func TestNewQueryTransmissionTimeAppData(t *testing.T) {
+	tests := []struct {
+		name string
+		want []byte
+	}{
+		{name: "test", want: []byte{0x58, 0x01, 0x00}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewQueryTransmissionTimeAppData(), tt.want)
+		})
+	}
+}
+
+func TestNewInitializeTransmissionAppData(t *testing.T) {
+	tests := []struct {
+		name string
+		want []byte
+	}{
+		{name: "test", want: []byte{0x59, 0x01, 0x00}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewInitializeTransmissionAppData(), tt.want)
+		})
+	}
+}
+
+func TestNewSyncTransmissionTimeAppData(t *testing.T) {
+	type args struct {
+		syncTime time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test sync to 2021-07-02 09:00:04", args: args{syncTime: time.Unix(1625187604, 0)}, want: []byte{0x5a, 0x01, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewSyncTransmissionTimeAppData(tt.args.syncTime), tt.want)
+		})
+	}
+}
+
+func TestNewInspectSentriesAppData(t *testing.T) {
+	type args struct {
+		timeoutMinute int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "test timeout 0 minute", args: args{timeoutMinute: 0}, want: []byte{0x5b, 0x01, 0x00}},
+		{name: "test timeout 10 minute", args: args{timeoutMinute: 10}, want: []byte{0x5b, 0x01, 0x0a}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, NewInspectSentriesAppData(tt.args.timeoutMinute), tt.want)
+		})
+	}
 }
