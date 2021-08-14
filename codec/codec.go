@@ -1,9 +1,11 @@
+// Package codec is define Encoder and Decoder for GB26875.3-2011
 package codec
 
 import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/shootingfans/codec_gb26875_3_2011/constant"
 	"github.com/shootingfans/codec_gb26875_3_2011/utils"
@@ -336,4 +338,132 @@ func decodeUploadTransmissionTime(b []byte, packet *constant.Packet) {
 		return
 	}
 	packet.TransmissionTimestamps = append(packet.TransmissionTimestamps, constant.TransmissionTimestamp{Timestamp: utils.Bytes2Timestamp(b[0:6])})
+}
+
+// NewQuerySystemStateAppData create a query system state app data request
+func NewQuerySystemStateAppData(controllers ...constant.Controller) []byte {
+	if len(controllers) == 0 {
+		return nil
+	}
+	b := make([]byte, 2+len(controllers)*2)
+	b[0], b[1] = byte(constant.AppTypeOfQuerySystemState), byte(len(controllers))
+	for idx, controller := range controllers {
+		offset := idx * 2
+		b[2+offset], b[3+offset] = byte(controller.Type), byte(controller.Addr)
+	}
+	return b
+}
+
+// NewQueryEquipmentStateAppData create a query equipment state app data request
+func NewQueryEquipmentStateAppData(equipments ...constant.Equipment) []byte {
+	if len(equipments) == 0 {
+		return nil
+	}
+	b := make([]byte, 2+len(equipments)*6)
+	b[0], b[1] = byte(constant.AppTypeOfQueryEquipmentState), byte(len(equipments))
+	for idx, equipment := range equipments {
+		offset := idx * 6
+		b[2+offset], b[3+offset] = byte(equipment.Ctrl.Type), byte(equipment.Ctrl.Addr)
+		binary.LittleEndian.PutUint32(b[4+offset:8+offset], uint32(equipment.Addr))
+	}
+	return b
+}
+
+// NewQueryEquipmentParameterAppData create a query equipment parameter app data request
+func NewQueryEquipmentParameterAppData(equipments ...constant.Equipment) []byte {
+	if len(equipments) == 0 {
+		return nil
+	}
+	b := make([]byte, 2+len(equipments)*6)
+	b[0], b[1] = byte(constant.AppTypeOfQueryEquipmentParameter), byte(len(equipments))
+	for idx, equipment := range equipments {
+		offset := idx * 6
+		b[2+offset], b[3+offset] = byte(equipment.Ctrl.Type), byte(equipment.Ctrl.Addr)
+		binary.LittleEndian.PutUint32(b[4+offset:8+offset], uint32(equipment.Addr))
+	}
+	return b
+}
+
+// NewQuerySystemOperatingInformationAppData create a query system operating information app data request
+func NewQuerySystemOperatingInformationAppData(controller constant.Controller, total int, startTime time.Time) []byte {
+	return append([]byte{byte(constant.AppTypeOfQuerySystemOperatingInformation), 0x01, byte(controller.Type), byte(controller.Addr), byte(total)}, utils.Timestamp2Bytes(startTime.Unix())...)
+}
+
+// NewQuerySystemSoftwareVersionAppData create a query system software version app data request
+func NewQuerySystemSoftwareVersionAppData(controller constant.Controller) []byte {
+	return []byte{byte(constant.AppTypeOfQuerySystemSoftwareVersion), 0x01, byte(controller.Type), byte(controller.Addr)}
+}
+
+// NewQuerySystemConfigureAppData create a query system configure app data request
+func NewQuerySystemConfigureAppData(controllers ...constant.Controller) []byte {
+	if len(controllers) == 0 {
+		return nil
+	}
+	b := make([]byte, 2+len(controllers)*2)
+	b[0], b[1] = byte(constant.AppTypeOfQuerySystemConfigure), byte(len(controllers))
+	for idx, controller := range controllers {
+		offset := idx * 2
+		b[2+offset], b[3+offset] = byte(controller.Type), byte(controller.Addr)
+	}
+	return b
+}
+
+// NewQueryEquipmentConfigureAppData create a query equipment configure app data request
+func NewQueryEquipmentConfigureAppData(equipments ...constant.Equipment) []byte {
+	if len(equipments) == 0 {
+		return nil
+	}
+	b := make([]byte, 2+len(equipments)*6)
+	b[0], b[1] = byte(constant.AppTypeOfQueryEquipmentConfigure), byte(len(equipments))
+	for idx, equipment := range equipments {
+		offset := idx * 6
+		b[2+offset], b[3+offset] = byte(equipment.Ctrl.Type), byte(equipment.Ctrl.Addr)
+		binary.LittleEndian.PutUint32(b[4+offset:8+offset], uint32(equipment.Addr))
+	}
+	return b
+}
+
+// NewQuerySystemTimeAppData create a query system time app data request
+func NewQuerySystemTimeAppData(controller constant.Controller) []byte {
+	return []byte{byte(constant.AppTypeOfQuerySystemTime), 1, byte(controller.Type), byte(controller.Addr)}
+}
+
+// NewQueryTransmissionStateAppData create a query transmission state app data request
+func NewQueryTransmissionStateAppData() []byte {
+	return []byte{byte(constant.AppTypeOfQueryTransmissionState), 0x01, 0x00}
+}
+
+// NewQueryTransmissionOperatingInformationAppData create a query transmission operating information app data request
+func NewQueryTransmissionOperatingInformationAppData(total int, startTime time.Time) []byte {
+	return append([]byte{byte(constant.AppTypeOfQueryTransmissionOperatingInformation), 0x01, byte(total)}, utils.Timestamp2Bytes(startTime.Unix())...)
+}
+
+// NewQueryTransmissionSoftwareVersionAppData create a query transmission software version app data request
+func NewQueryTransmissionSoftwareVersionAppData() []byte {
+	return []byte{byte(constant.AppTypeOfQueryTransmissionSoftwareVersion), 0x01, 0x00}
+}
+
+// NewQueryTransmissionConfigureAppData create a query transmission configure app data request
+func NewQueryTransmissionConfigureAppData() []byte {
+	return []byte{byte(constant.AppTypeOfQueryTransmissionConfigure), 0x01, 0x00}
+}
+
+// NewQueryTransmissionTimeAppData create a query transmission time app data request
+func NewQueryTransmissionTimeAppData() []byte {
+	return []byte{byte(constant.AppTypeOfQueryTransmissionTime), 0x01, 0x00}
+}
+
+// NewInitializeTransmissionAppData create a initialize transmission app data request
+func NewInitializeTransmissionAppData() []byte {
+	return []byte{byte(constant.AppTypeOfInitializeTransmission), 0x01, 0x00}
+}
+
+// NewSyncTransmissionTimeAppData create a sync transmission app data request
+func NewSyncTransmissionTimeAppData(syncTime time.Time) []byte {
+	return append([]byte{byte(constant.AppTypeOfSyncTransmissionTime), 0x01}, utils.Timestamp2Bytes(syncTime.Unix())...)
+}
+
+// NewInspectSentriesAppData create a inspect sentries app data request
+func NewInspectSentriesAppData(timeoutMinute int) []byte {
+	return []byte{byte(constant.AppTypeOfInspectSentries), 0x01, byte(timeoutMinute)}
 }
