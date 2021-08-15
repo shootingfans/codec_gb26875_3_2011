@@ -23,3 +23,12 @@ jobs:
 
       - name: Run go tests on ${{ matrix.go_version }}
         run: go test -v -cover -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          directory: ./
+          fail_ci_if_error: true
+          env_vars: OS,GOVERSION
+          flags: unittests
+          verbose: true
