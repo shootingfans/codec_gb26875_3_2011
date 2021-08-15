@@ -548,7 +548,7 @@ func TestNewQuerySystemOperatingInformationAppData(t *testing.T) {
 		want []byte
 	}{
 		{name: "test total 10 time start 2021-07-02 00:00:00", args: args{controller: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x01}, total: 10, startTime: time.Unix(1625155200, 0)},
-			want: []byte{0x40, 0x01, 0x01, 0x01, 0x0a, 0x00, 0x00, 0x00, 0x02, 0x07, 0x15}},
+			want: append([]byte{0x40, 0x01, 0x01, 0x01, 0x0a}, utils.Timestamp2Bytes(1625155200)...)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -667,7 +667,7 @@ func TestNewQueryTransmissionOperatingInformationAppData(t *testing.T) {
 		args args
 		want []byte
 	}{
-		{name: "test total 16 startTime 2021-07-02 09:00:04", args: args{total: 16, startTime: time.Unix(1625187604, 0)}, want: []byte{0x54, 0x01, 0x10, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}},
+		{name: "test total 16 startTime 2021-07-02 09:00:04", args: args{total: 16, startTime: time.Unix(1625187604, 0)}, want: append([]byte{0x54, 0x01, 0x10}, utils.Timestamp2Bytes(1625187604)...)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

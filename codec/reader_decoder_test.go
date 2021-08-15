@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/shootingfans/codec_gb26875_3_2011/constant"
+	"github.com/shootingfans/codec_gb26875_3_2011/utils"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -29,7 +30,7 @@ func TestReaderDecoder(t *testing.T) {
 					assert.EqualValues(t, p, &constant.Packet{
 						Header: constant.Header{
 							Version:   0x101,
-							Timestamp: 1603358004,
+							Timestamp: utils.Bytes2Timestamp([]byte{0x30, 0x12, 0x13, 0x01, 0x08, 0x14}),
 							Target:    0x010203040506,
 						},
 						Action: constant.ActionOfSendData,
