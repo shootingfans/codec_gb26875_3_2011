@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/shootingfans/codec_gb26875_3_2011/constant"
+	"github.com/shootingfans/codec_gb26875_3_2011/utils"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -22,10 +23,10 @@ func TestEncode(t *testing.T) {
 			Action: constant.ActionOfAck,
 		})
 		assert.Nil(t, err)
-		assert.EqualValues(t, b, []byte{
-			0x40, 0x40, 0x01, 0x00, 0x00, 0x01, 0x05, 0x00, 0x09, 0x02, 0x07, 0x15, 0x05, 0x04,
+		assert.EqualValues(t, b, append(append([]byte{
+			0x40, 0x40, 0x01, 0x00, 0x00, 0x01}, utils.Timestamp2Bytes(1625187605)...), 0x05, 0x04,
 			0x03, 0x02, 0x01, 0x00, 0x0b, 0x0a, 0x09, 0x08, 0x07, 0x06, 0x00, 0x00, 0x03, 0x73, 0x23, 0x23,
-		})
+		))
 	})
 	t.Run("test encode", func(t *testing.T) {
 		b, err := Encode(&constant.Packet{
@@ -40,11 +41,10 @@ func TestEncode(t *testing.T) {
 			AppData: []byte{0x59, 0x01, 0x00},
 		})
 		assert.Nil(t, err)
-		assert.EqualValues(t, b, []byte{
-			0x40, 0x40, 0x01, 0x00, 0x00, 0x01, 0x05, 0x00, 0x09, 0x02, 0x07, 0x15, 0x05, 0x04,
+		assert.EqualValues(t, b, append(append([]byte{0x40, 0x40, 0x01, 0x00, 0x00, 0x01}, utils.Timestamp2Bytes(1625187605)...), 0x05, 0x04,
 			0x03, 0x02, 0x01, 0x00, 0x0b, 0x0a, 0x09, 0x08, 0x07, 0x06, 0x03, 0x00, 0x04, 0x59,
 			0x01, 0x00, 0xd1, 0x23, 0x23,
-		})
+		))
 	})
 }
 
@@ -89,7 +89,7 @@ func TestDecode(t *testing.T) {
 			Header: constant.Header{
 				SerialId:  0,
 				Version:   constant.Version(0x0101),
-				Timestamp: 1603358004,
+				Timestamp: utils.Bytes2Timestamp([]byte{0x18, 0x0d, 0x11, 0x16, 0x0a, 0x14}),
 				Source:    0,
 				Target:    0x010203040506,
 			},
@@ -105,7 +105,7 @@ func TestDecode(t *testing.T) {
 					},
 					Flag:        0x02,
 					Description: "Ａ区１层呷哺走廊",
-					Timestamp:   1596280728,
+					Timestamp:   utils.Bytes2Timestamp([]byte{0x30, 0x12, 0x13, 0x01, 0x08, 0x14}),
 				},
 			},
 			AppData: []byte{0x02, 0x01, 0x01, 0x03, 0x00, 0xd9, 0x00, 0x06, 0x00, 0x02, 0x00, 0xa3, 0xc1, 0xc7, 0xf8, 0xa3, 0xb1, 0xb2, 0xe3, 0xdf, 0xc8, 0xb2, 0xb8, 0xd7, 0xdf, 0xc0, 0xc8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x12, 0x13, 0x01, 0x08, 0x14},
@@ -142,15 +142,15 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x01, 0x01, 0x01, 0x02, 0x04, 0x02, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerStates, []constant.ControllerStateInfo{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.StateFlag(0x0204), Timestamp: 1625187604},
+				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 		t.Run("test decode upload more system state", func(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x01, 0x02, 0x01, 0x02, 0x04, 0x02, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15, 0x0d, 0x03, 0x05, 0x01, 0x05, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerStates, []constant.ControllerStateInfo{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.StateFlag(0x0204), Timestamp: 1625187604},
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Flag: constant.StateFlag(0x0105), Timestamp: 1625187605},
+				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Flag: constant.StateFlag(0x0105), Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 	})
@@ -169,7 +169,7 @@ func TestDecodeAppData(t *testing.T) {
 						Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2},
 						Type: constant.EquipmentTypeOfAlarmDevice,
 						Addr: constant.EquipmentAddr(0x04030201),
-					}, Flag: constant.StateFlag(0x0204), Timestamp: 1625187604, Description: "7楼02室会议室烟感",
+					}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15}), Description: "7楼02室会议室烟感",
 				},
 			})
 		})
@@ -183,12 +183,12 @@ func TestDecodeAppData(t *testing.T) {
 					Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2},
 					Type: constant.EquipmentTypeOfAlarmDevice,
 					Addr: constant.EquipmentAddr(0x04030201),
-				}, Flag: constant.StateFlag(0x0204), Timestamp: 1625187604, Description: "7楼02室会议室烟感"},
+				}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15}), Description: "7楼02室会议室烟感"},
 				{Equ: constant.Equipment{
 					Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3},
 					Type: constant.EquipmentTypeOfAlarmDevice,
 					Addr: constant.EquipmentAddr(0x06050403),
-				}, Flag: constant.StateFlag(0x0105), Timestamp: 1625187605, Description: "7楼02室会议室烟感"},
+				}, Flag: constant.StateFlag(0x0105), Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15}), Description: "7楼02室会议室烟感"},
 			})
 		})
 	})
@@ -212,7 +212,7 @@ func TestDecodeAppData(t *testing.T) {
 						Type:  constant.ParameterTypeOfTemperature,
 						Value: constant.ParameterValue(0x0320),
 					},
-					Timestamp: 1625187604,
+					Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15}),
 				},
 			})
 		})
@@ -232,7 +232,7 @@ func TestDecodeAppData(t *testing.T) {
 						Type:  constant.ParameterTypeOfTemperature,
 						Value: constant.ParameterValue(0x0320),
 					},
-					Timestamp: 1625187604},
+					Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 				{
 					Equ: constant.Equipment{
 						Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3},
@@ -242,7 +242,7 @@ func TestDecodeAppData(t *testing.T) {
 						Type:  constant.ParameterTypeOfHeight,
 						Value: constant.ParameterValue(0x5001),
 					},
-					Timestamp: 1625187605,
+					Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15}),
 				},
 			})
 		})
@@ -257,7 +257,7 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x04, 0x01, 0x01, 0x02, 0x84, 0xfa, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerOperations, []constant.ControllerOperationInfo{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.OperationFlag(0x84), Operator: 0xfa, Timestamp: 1625187604},
+				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.OperationFlag(0x84), Operator: 0xfa, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 		t.Run("test decode upload more equipment parameter", func(t *testing.T) {
@@ -266,8 +266,8 @@ func TestDecodeAppData(t *testing.T) {
 				0x0d, 0x03, 0x73, 0xfb, 0x05, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerOperations, []constant.ControllerOperationInfo{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.OperationFlag(0x84), Operator: 0xfa, Timestamp: 1625187604},
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Flag: constant.OperationFlag(0x73), Operator: 0xfb, Timestamp: 1625187605},
+				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.OperationFlag(0x84), Operator: 0xfa, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Flag: constant.OperationFlag(0x73), Operator: 0xfb, Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 	})
@@ -375,7 +375,7 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x08, 0x01, 0x01, 0x02, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerTimestamps, []constant.ControllerTimestamp{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Timestamp: 1625187604},
+				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 	})
@@ -389,7 +389,7 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x15, 0x01, 0x08, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.TransmissionStates, []constant.TransmissionStateInfo{
-				{Flag: constant.StateFlag(0x08), Timestamp: 1625187604},
+				{Flag: constant.StateFlag(0x08), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 	})
@@ -403,7 +403,7 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x18, 0x01, 0x31, 0xfa, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.TransmissionOperations, []constant.TransmissionOperationInfo{
-				{Flag: constant.OperationFlag(0x31), Operator: 0xfa, Timestamp: 1625187604},
+				{Flag: constant.OperationFlag(0x31), Operator: 0xfa, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 		t.Run("test decode upload more transmission operation", func(t *testing.T) {
@@ -412,8 +412,8 @@ func TestDecodeAppData(t *testing.T) {
 				0x73, 0xfb, 0x05, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.TransmissionOperations, []constant.TransmissionOperationInfo{
-				{Flag: constant.OperationFlag(0x31), Operator: 0xfa, Timestamp: 1625187604},
-				{Flag: constant.OperationFlag(0x73), Operator: 0xfb, Timestamp: 1625187605},
+				{Flag: constant.OperationFlag(0x31), Operator: 0xfa, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Flag: constant.OperationFlag(0x73), Operator: 0xfb, Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 	})
@@ -459,7 +459,7 @@ func TestDecodeAppData(t *testing.T) {
 		t.Run("test decode upload one transmission time", func(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x1c, 0x01, 0x05, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
-			assert.EqualValues(t, p.TransmissionTimestamps, []constant.TransmissionTimestamp{{Timestamp: 1625187605}})
+			assert.EqualValues(t, p.TransmissionTimestamps, []constant.TransmissionTimestamp{{Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15})}})
 		})
 	})
 }
@@ -739,7 +739,7 @@ func TestNewSyncTransmissionTimeAppData(t *testing.T) {
 		args args
 		want []byte
 	}{
-		{name: "test sync to 2021-07-02 09:00:04", args: args{syncTime: time.Unix(1625187604, 0)}, want: []byte{0x5a, 0x01, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}},
+		{name: "test sync to 2021-07-02 09:00:04", args: args{syncTime: time.Unix(1625187604, 0)}, want: append([]byte{0x5a, 0x01}, utils.Timestamp2Bytes(1625187604)...)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
