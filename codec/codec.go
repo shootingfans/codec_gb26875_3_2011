@@ -140,8 +140,10 @@ func (m myCodec) Decode(b []byte) (*constant.Packet, int, error) {
 			Version:   constant.Version(binary.BigEndian.Uint16(b[4:6])),
 			Timestamp: utils.Bytes2Timestamp(b[6:12]),
 		},
-		Action:  constant.Action(b[26]),
-		AppData: b[27 : packetLength-DefaultTailLength],
+		Action: constant.Action(b[26]),
+	}
+	if dataLength > 0 {
+		packet.AppData = b[27 : packetLength-DefaultTailLength]
 	}
 	address := make([]byte, 8)
 	copy(address[0:6], b[12:18])
