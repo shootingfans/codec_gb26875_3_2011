@@ -18,6 +18,7 @@ func (ct AppType) String() string {
 	return "[" + strconv.Itoa(int(ct)) + "]" + ct.Name()
 }
 
+// define app types of 1 ~ 8
 const (
 	AppTypeOfUploadSystemState                AppType = iota + 1 // upload system state
 	AppTypeOfUploadEquipmentState                                // upload equipment state
@@ -29,6 +30,7 @@ const (
 	AppTypeOfUploadSystemTime                                    // upload system time
 )
 
+// define app types of 21 ~ 28
 const (
 	AppTypeOfUploadTransmissionState AppType = iota + 21 // upload transmission state
 	_
@@ -40,6 +42,7 @@ const (
 	AppTypeOfUploadTransmissionTime // upload transmission time
 )
 
+// define app types of 61 ~ 68
 const (
 	AppTypeOfQuerySystemState                AppType = iota + 61 // query system state
 	AppTypeOfQueryEquipmentState                                 // query equipment state
@@ -51,6 +54,7 @@ const (
 	AppTypeOfQuerySystemTime                                     // query system time
 )
 
+// define app types of 81 ~ 91
 const (
 	AppTypeOfQueryTransmissionState AppType = iota + 81 // query transmission state
 	_

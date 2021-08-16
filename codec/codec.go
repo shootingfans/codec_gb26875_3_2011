@@ -13,12 +13,16 @@ import (
 	"github.com/valyala/bytebufferpool"
 )
 
+// define errors
 var (
 	ErrPacketInvalid         = errors.New("packet invalid")          // packet is invalid
 	ErrPacketNotEnough       = errors.New("packet not enough")       // packet data not enough
 	ErrPacketChecksumInvalid = errors.New("packet checksum invalid") // packet checksum invalid
-	defaultCodec             = myCodec{}
+
 )
+
+// define default codec
+var defaultCodec = myCodec{}
 
 const (
 	HeadFlag          byte = 0x40 // packet header flag: 0x40 0x40
@@ -58,8 +62,10 @@ type AppDecoder interface {
 	Decode(b []byte, packet *constant.Packet)
 }
 
+// AppDataDecoder is decode app data func
 type AppDataDecoder func(b []byte, packet *constant.Packet)
 
+// Decode is decode app data
 func (a AppDataDecoder) Decode(b []byte, packet *constant.Packet) {
 	a(b, packet)
 }

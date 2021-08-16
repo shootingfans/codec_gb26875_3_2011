@@ -47,11 +47,13 @@ func (eq EquipmentType) String() string {
 	return "[" + strconv.Itoa(int(eq)) + "]" + eq.Name()
 }
 
+// define 0 ~ 10 equipment type
 const (
 	EquipmentTypeOfGeneral          EquipmentType = iota // general
 	EquipmentTypeOfFireAlarmControl                      // fire alarm control
 )
 
+// define other equipment type
 const (
 	EquipmentTypeOfFlammableGasDetector              EquipmentType = 10 + iota // flammable gas detector
 	EquipmentTypeOfPointTypeFlammableGasDetector                               // point type flammable gas detector
@@ -164,10 +166,10 @@ const (
 	EquipmentTypeOfFireDoorDetector                             // fire door detector
 	_
 	_
-	EquipmentTypeOfAlarmDevice //报警装置
+	EquipmentTypeOfAlarmDevice // alarm device
 )
 
-// EquipmentTypeNames 定义各部件名称
+// EquipmentTypeNames is equipment type names
 var EquipmentTypeNames = map[EquipmentType]string{
 	EquipmentTypeOfGeneral:                                          "通用",
 	EquipmentTypeOfFireAlarmControl:                                 "火灾报警控制器",

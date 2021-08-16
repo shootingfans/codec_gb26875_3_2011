@@ -11,6 +11,7 @@ import (
 	"github.com/shootingfans/codec_gb26875_3_2011/constant"
 )
 
+// ReaderDecoder is a decoder for io.Reader
 type ReaderDecoder struct {
 	*readerDecoder
 }
@@ -54,6 +55,7 @@ func (r *readerDecoder) cron() {
 	}
 }
 
+// NewReaderDecoder is create ReaderDecoder
 func NewReaderDecoder(reader io.Reader) *ReaderDecoder {
 	rc := &ReaderDecoder{
 		&readerDecoder{

@@ -18,6 +18,7 @@ func (ct Action) String() string {
 	return "[" + strconv.Itoa(int(ct)) + "]" + ct.Name()
 }
 
+// define all actions
 const (
 	ActionOfControl  Action = iota + 1 // control action
 	ActionOfSendData                   // send data action
@@ -27,7 +28,7 @@ const (
 	ActionOfReject                     // reject action
 )
 
-// ActionNames 定义动作的名称
+// ActionNames is action names
 var ActionNames = map[Action]string{
 	ActionOfControl:  "控制命令",
 	ActionOfSendData: "发送数据",

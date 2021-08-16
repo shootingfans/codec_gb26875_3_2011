@@ -63,11 +63,13 @@ func (ct ControllerType) String() string {
 	return "[" + strconv.Itoa(int(ct)) + "]" + ct.Name()
 }
 
+// define controller types 0 ~ 1
 const (
 	ControllerTypeOfGeneral         ControllerType = iota // general controller
 	ControllerTypeOfFireAlarmSystem                       // fire alarm controller
 )
 
+// define controller types 10 ~ 24
 const (
 	ControllerTypeOfFireLinkageSystem                                  ControllerType = 10 + iota // fire linkage controller
 	ControllerTypeOfFireCockSystem                                                                // fire cock system
@@ -84,7 +86,6 @@ const (
 	ControllerTypeOfFireEmergencyLightingAndEvacuationIndicationSystem                            // fire emergency lighting and evacuation indication system
 	ControllerTypeOfFirePowerSupply                                                               // firepower supply
 	ControllerTypeOfFireTelephone                                                                 // fire telephone
-
 )
 
 // ControllerTypeNames is declared all controller type names

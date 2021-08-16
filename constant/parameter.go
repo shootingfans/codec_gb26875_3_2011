@@ -57,6 +57,7 @@ func (pv ParameterValue) ToFloat(prec int) float64 {
 	return float64(pv) / math.Pow10(prec)
 }
 
+// define parameter types
 const (
 	ParameterTypeOfCounter          ParameterType = iota + 1 // event counter
 	ParameterTypeOfHeight                                    // height (0.01m)
