@@ -106,8 +106,8 @@ const (
 	_
 	_
 	_
-	EquipmentTypeOfUltravioletFlameDetectorEquipmentType // equipment type of ultraviolet flame detector
-	EquipmentTypeOfInfraredFlameDetectorEquipmentType    // equipment type of infrared flame detector
+	UltravioletFlameDetectorEquipmentType // equipment type of ultraviolet flame detector
+	InfraredFlameDetectorEquipmentType    // equipment type of infrared flame detector
 	_
 	_
 	_
@@ -202,8 +202,8 @@ var EquipmentTypeNames = map[EquipmentType]string{
 	CompoundSmokeAndTemperatureFireDetectorEquipmentType:          "CompoundSmokeAndTemperatureFireDetector",
 	CompoundPhotosensitiveAndTemperatureFireDetectorEquipmentType: "CompoundPhotosensitiveAndTemperatureFireDetectorEquipmentType:",
 	CompoundPhotosensitiveAndSmokeFireDetectorEquipmentType:       "CompoundPhotosensitiveAndSmokeFireDetector",
-	EquipmentTypeOfUltravioletFlameDetectorEquipmentType:          "EquipmentTypeOfUltravioletFlameDetector",
-	EquipmentTypeOfInfraredFlameDetectorEquipmentType:             "EquipmentTypeOfInfraredFlameDetector",
+	UltravioletFlameDetectorEquipmentType:                         "UltravioletFlameDetector",
+	InfraredFlameDetectorEquipmentType:                            "InfraredFlameDetector",
 	OpticalFlameFireDetectorEquipmentType:                         "OpticalFlameFireDetector",
 	GasDetectorEquipmentType:                                      "GasDetector",
 	ImageCameraModeFireDetectorEquipmentType:                      "ImageCameraModeFireDetector",
