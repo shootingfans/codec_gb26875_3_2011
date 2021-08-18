@@ -169,7 +169,7 @@ func TestDecodeAppData(t *testing.T) {
 				{
 					Equ: constant.Equipment{
 						Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
-						Type: constant.EquipmentTypeOfAlarmDevice,
+						Type: constant.AlarmDeviceEquipmentType,
 						Addr: constant.EquipmentAddr(0x04030201),
 					}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15}), Description: "这是一个转码测试",
 				},
@@ -183,12 +183,12 @@ func TestDecodeAppData(t *testing.T) {
 			assert.EqualValues(t, p.EquipmentStates, []constant.EquipmentStateInfo{
 				{Equ: constant.Equipment{
 					Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
-					Type: constant.EquipmentTypeOfAlarmDevice,
+					Type: constant.AlarmDeviceEquipmentType,
 					Addr: constant.EquipmentAddr(0x04030201),
 				}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15}), Description: "这是一个转码测试"},
 				{Equ: constant.Equipment{
 					Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3},
-					Type: constant.EquipmentTypeOfAlarmDevice,
+					Type: constant.AlarmDeviceEquipmentType,
 					Addr: constant.EquipmentAddr(0x06050403),
 				}, Flag: constant.StateFlag(0x0105), Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15}), Description: "这是一个转码测试"},
 			})
@@ -207,7 +207,7 @@ func TestDecodeAppData(t *testing.T) {
 				{
 					Equ: constant.Equipment{
 						Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
-						Type: constant.EquipmentTypeOfSmokeFireDetector,
+						Type: constant.SmokeFireDetectorEquipmentType,
 						Addr: constant.EquipmentAddr(0x04030201),
 					},
 					Info: constant.ParameterInfo{
@@ -227,7 +227,7 @@ func TestDecodeAppData(t *testing.T) {
 				{
 					Equ: constant.Equipment{
 						Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
-						Type: constant.EquipmentTypeOfSmokeFireDetector,
+						Type: constant.SmokeFireDetectorEquipmentType,
 						Addr: constant.EquipmentAddr(0x04030201),
 					},
 					Info: constant.ParameterInfo{
@@ -238,7 +238,7 @@ func TestDecodeAppData(t *testing.T) {
 				{
 					Equ: constant.Equipment{
 						Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3},
-						Type: constant.EquipmentTypeOfAlarmDevice,
+						Type: constant.AlarmDeviceEquipmentType,
 						Addr: constant.EquipmentAddr(0x06050403),
 					}, Info: constant.ParameterInfo{
 						Type:  constant.ParameterTypeOfHeight,
@@ -342,7 +342,7 @@ func TestDecodeAppData(t *testing.T) {
 			assert.EqualValues(t, p.EquipmentConfigures, []constant.EquipmentConfigure{
 				{Equ: constant.Equipment{
 					Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
-					Type: constant.EquipmentTypeOfSmokeFireDetector,
+					Type: constant.SmokeFireDetectorEquipmentType,
 					Addr: constant.EquipmentAddr(0x04030201),
 				}, Description: "这是一个转码测试"},
 			})
@@ -356,12 +356,12 @@ func TestDecodeAppData(t *testing.T) {
 			assert.EqualValues(t, p.EquipmentConfigures, []constant.EquipmentConfigure{
 				{Equ: constant.Equipment{
 					Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
-					Type: constant.EquipmentTypeOfSmokeFireDetector,
+					Type: constant.SmokeFireDetectorEquipmentType,
 					Addr: constant.EquipmentAddr(0x04030201),
 				}, Description: "这是一个转码测试"},
 				{Equ: constant.Equipment{
 					Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3},
-					Type: constant.EquipmentTypeOfInputModule,
+					Type: constant.InputModuleEquipmentType,
 					Addr: constant.EquipmentAddr(0x06050403),
 				}, Description: "这是一个转码测试"},
 			})
@@ -497,11 +497,11 @@ func TestNewQueryEquipmentStateAppData(t *testing.T) {
 	}{
 		{name: "test empty", args: args{}, want: nil},
 		{name: "test one equipment", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.AlarmDeviceEquipmentType, Addr: 0x01110203},
 		}}, want: []byte{0x3e, 0x01, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01}},
 		{name: "test more equipments", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
-			{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Type: constant.EquipmentTypeOfSmokeFireDetector, Addr: 0x12345678},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.AlarmDeviceEquipmentType, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Type: constant.SmokeFireDetectorEquipmentType, Addr: 0x12345678},
 		}}, want: []byte{0x3e, 0x02, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01, 0x0d, 0x03, 0x78, 0x56, 0x34, 0x12}},
 	}
 	for _, tt := range tests {
@@ -522,11 +522,11 @@ func TestNewQueryEquipmentParameterAppData(t *testing.T) {
 	}{
 		{name: "test empty", args: args{}, want: nil},
 		{name: "test one equipment", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.AlarmDeviceEquipmentType, Addr: 0x01110203},
 		}}, want: []byte{0x3f, 0x01, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01}},
 		{name: "test more equipments", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
-			{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Type: constant.EquipmentTypeOfSmokeFireDetector, Addr: 0x12345678},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.AlarmDeviceEquipmentType, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Type: constant.SmokeFireDetectorEquipmentType, Addr: 0x12345678},
 		}}, want: []byte{0x3f, 0x02, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01, 0x0d, 0x03, 0x78, 0x56, 0x34, 0x12}},
 	}
 	for _, tt := range tests {
@@ -611,11 +611,11 @@ func TestNewQueryEquipmentConfigureAppData(t *testing.T) {
 	}{
 		{name: "test empty", args: args{}, want: nil},
 		{name: "test one", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.EquipmentTypeOfAlarmDevice},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.AlarmDeviceEquipmentType},
 		}}, want: []byte{0x43, 0x01, 0x01, 0x01, 0x78, 0x56, 0x34, 0x12}},
 		{name: "test more", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.EquipmentTypeOfAlarmDevice},
-			{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 0x03}, Addr: constant.EquipmentAddr(0x01020304), Type: constant.EquipmentTypeOfGasDetector},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.AlarmDeviceEquipmentType},
+			{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 0x03}, Addr: constant.EquipmentAddr(0x01020304), Type: constant.GasDetectorEquipmentType},
 		}}, want: []byte{0x43, 0x02, 0x01, 0x01, 0x78, 0x56, 0x34, 0x12, 0x0d, 0x03, 0x04, 0x03, 0x02, 0x01}},
 	}
 	for _, tt := range tests {
