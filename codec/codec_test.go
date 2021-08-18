@@ -100,7 +100,7 @@ func TestDecode(t *testing.T) {
 				{
 					Equ: constant.Equipment{
 						Ctrl: constant.Controller{
-							Type: constant.ControllerTypeOfFireAlarmSystem,
+							Type: constant.FireAlarmSystemControllerType,
 							Addr: 0x03,
 						},
 						Addr: 0x0600d9,
@@ -144,15 +144,15 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x01, 0x01, 0x01, 0x02, 0x04, 0x02, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerStates, []constant.ControllerStateInfo{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 		t.Run("test decode upload more system state", func(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x01, 0x02, 0x01, 0x02, 0x04, 0x02, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15, 0x0d, 0x03, 0x05, 0x01, 0x05, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerStates, []constant.ControllerStateInfo{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Flag: constant.StateFlag(0x0105), Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Flag: constant.StateFlag(0x0105), Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 	})
@@ -168,7 +168,7 @@ func TestDecodeAppData(t *testing.T) {
 			assert.EqualValues(t, p.EquipmentStates, []constant.EquipmentStateInfo{
 				{
 					Equ: constant.Equipment{
-						Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2},
+						Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
 						Type: constant.EquipmentTypeOfAlarmDevice,
 						Addr: constant.EquipmentAddr(0x04030201),
 					}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15}), Description: "这是一个转码测试",
@@ -182,12 +182,12 @@ func TestDecodeAppData(t *testing.T) {
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.EquipmentStates, []constant.EquipmentStateInfo{
 				{Equ: constant.Equipment{
-					Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2},
+					Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
 					Type: constant.EquipmentTypeOfAlarmDevice,
 					Addr: constant.EquipmentAddr(0x04030201),
 				}, Flag: constant.StateFlag(0x0204), Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15}), Description: "这是一个转码测试"},
 				{Equ: constant.Equipment{
-					Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3},
+					Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3},
 					Type: constant.EquipmentTypeOfAlarmDevice,
 					Addr: constant.EquipmentAddr(0x06050403),
 				}, Flag: constant.StateFlag(0x0105), Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15}), Description: "这是一个转码测试"},
@@ -206,7 +206,7 @@ func TestDecodeAppData(t *testing.T) {
 			assert.EqualValues(t, p.EquipmentParameters, []constant.EquipmentParameterInfo{
 				{
 					Equ: constant.Equipment{
-						Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2},
+						Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
 						Type: constant.EquipmentTypeOfSmokeFireDetector,
 						Addr: constant.EquipmentAddr(0x04030201),
 					},
@@ -226,7 +226,7 @@ func TestDecodeAppData(t *testing.T) {
 			assert.EqualValues(t, p.EquipmentParameters, []constant.EquipmentParameterInfo{
 				{
 					Equ: constant.Equipment{
-						Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2},
+						Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
 						Type: constant.EquipmentTypeOfSmokeFireDetector,
 						Addr: constant.EquipmentAddr(0x04030201),
 					},
@@ -237,7 +237,7 @@ func TestDecodeAppData(t *testing.T) {
 					Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 				{
 					Equ: constant.Equipment{
-						Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3},
+						Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3},
 						Type: constant.EquipmentTypeOfAlarmDevice,
 						Addr: constant.EquipmentAddr(0x06050403),
 					}, Info: constant.ParameterInfo{
@@ -259,7 +259,7 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x04, 0x01, 0x01, 0x02, 0x84, 0xfa, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerOperations, []constant.ControllerOperationInfo{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.OperationFlag(0x84), Operator: 0xfa, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2}, Flag: constant.OperationFlag(0x84), Operator: 0xfa, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 		t.Run("test decode upload more equipment parameter", func(t *testing.T) {
@@ -268,8 +268,8 @@ func TestDecodeAppData(t *testing.T) {
 				0x0d, 0x03, 0x73, 0xfb, 0x05, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerOperations, []constant.ControllerOperationInfo{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Flag: constant.OperationFlag(0x84), Operator: 0xfa, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Flag: constant.OperationFlag(0x73), Operator: 0xfb, Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2}, Flag: constant.OperationFlag(0x84), Operator: 0xfa, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Flag: constant.OperationFlag(0x73), Operator: 0xfb, Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 	})
@@ -283,15 +283,15 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x05, 0x01, 0x01, 0x02, 0x03, 0x04}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerVersions, []constant.ControllerVersion{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Version: constant.Version(0x0304)},
+				{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2}, Version: constant.Version(0x0304)},
 			})
 		})
 		t.Run("test decode upload more system software version", func(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x05, 0x02, 0x01, 0x02, 0x03, 0x04, 0x0d, 0x03, 0x01, 0x01}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerVersions, []constant.ControllerVersion{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Version: constant.Version(0x0304)},
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Version: constant.Version(0x0101)},
+				{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2}, Version: constant.Version(0x0304)},
+				{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Version: constant.Version(0x0101)},
 			})
 		})
 	})
@@ -310,7 +310,7 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x06, 0x01, 0x01, 0x02, 0x1e, 0xd5, 0xe2, 0xca, 0xc7, 0xd2, 0xbb, 0xb8, 0xf6, 0xd7, 0xaa, 0xc2, 0xeb, 0xb2, 0xe2, 0xca, 0xd4, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerConfigures, []constant.ControllerConfigure{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Configure: "这是一个转码测试"},
+				{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2}, Configure: "这是一个转码测试"},
 			})
 		})
 		t.Run("test decode upload more system configure", func(t *testing.T) {
@@ -320,8 +320,8 @@ func TestDecodeAppData(t *testing.T) {
 			}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerConfigures, []constant.ControllerConfigure{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Configure: "这是一个转码测试"},
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Configure: "这是一个转码测试"},
+				{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2}, Configure: "这是一个转码测试"},
+				{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Configure: "这是一个转码测试"},
 			})
 		})
 	})
@@ -341,7 +341,7 @@ func TestDecodeAppData(t *testing.T) {
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.EquipmentConfigures, []constant.EquipmentConfigure{
 				{Equ: constant.Equipment{
-					Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2},
+					Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
 					Type: constant.EquipmentTypeOfSmokeFireDetector,
 					Addr: constant.EquipmentAddr(0x04030201),
 				}, Description: "这是一个转码测试"},
@@ -355,12 +355,12 @@ func TestDecodeAppData(t *testing.T) {
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.EquipmentConfigures, []constant.EquipmentConfigure{
 				{Equ: constant.Equipment{
-					Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2},
+					Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2},
 					Type: constant.EquipmentTypeOfSmokeFireDetector,
 					Addr: constant.EquipmentAddr(0x04030201),
 				}, Description: "这是一个转码测试"},
 				{Equ: constant.Equipment{
-					Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3},
+					Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3},
 					Type: constant.EquipmentTypeOfInputModule,
 					Addr: constant.EquipmentAddr(0x06050403),
 				}, Description: "这是一个转码测试"},
@@ -377,7 +377,7 @@ func TestDecodeAppData(t *testing.T) {
 			p := constant.Packet{AppData: []byte{0x08, 0x01, 0x01, 0x02, 0x04, 0x00, 0x09, 0x02, 0x07, 0x15}}
 			DecodeAppData(&p)
 			assert.EqualValues(t, p.ControllerTimestamps, []constant.ControllerTimestamp{
-				{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 2}, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
+				{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 2}, Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
 			})
 		})
 	})
@@ -476,8 +476,8 @@ func TestNewQuerySystemStateAppData(t *testing.T) {
 		want []byte
 	}{
 		{name: "test empty", args: args{}, want: nil},
-		{name: "test one controller", args: args{controllers: []constant.Controller{{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}}}, want: []byte{0x3d, 0x01, 0x01, 0x01}},
-		{name: "test more controllers", args: args{controllers: []constant.Controller{{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, {Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 2}}}, want: []byte{0x3d, 0x02, 0x01, 0x01, 0x0d, 0x02}},
+		{name: "test one controller", args: args{controllers: []constant.Controller{{Type: constant.FireAlarmSystemControllerType, Addr: 1}}}, want: []byte{0x3d, 0x01, 0x01, 0x01}},
+		{name: "test more controllers", args: args{controllers: []constant.Controller{{Type: constant.FireAlarmSystemControllerType, Addr: 1}, {Type: constant.GasFireExtinguishingSystemControllerType, Addr: 2}}}, want: []byte{0x3d, 0x02, 0x01, 0x01, 0x0d, 0x02}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -497,11 +497,11 @@ func TestNewQueryEquipmentStateAppData(t *testing.T) {
 	}{
 		{name: "test empty", args: args{}, want: nil},
 		{name: "test one equipment", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
 		}}, want: []byte{0x3e, 0x01, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01}},
 		{name: "test more equipments", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
-			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Type: constant.EquipmentTypeOfSmokeFireDetector, Addr: 0x12345678},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Type: constant.EquipmentTypeOfSmokeFireDetector, Addr: 0x12345678},
 		}}, want: []byte{0x3e, 0x02, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01, 0x0d, 0x03, 0x78, 0x56, 0x34, 0x12}},
 	}
 	for _, tt := range tests {
@@ -522,11 +522,11 @@ func TestNewQueryEquipmentParameterAppData(t *testing.T) {
 	}{
 		{name: "test empty", args: args{}, want: nil},
 		{name: "test one equipment", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
 		}}, want: []byte{0x3f, 0x01, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01}},
 		{name: "test more equipments", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
-			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 3}, Type: constant.EquipmentTypeOfSmokeFireDetector, Addr: 0x12345678},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 1}, Type: constant.EquipmentTypeOfAlarmDevice, Addr: 0x01110203},
+			{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 3}, Type: constant.EquipmentTypeOfSmokeFireDetector, Addr: 0x12345678},
 		}}, want: []byte{0x3f, 0x02, 0x01, 0x01, 0x03, 0x02, 0x11, 0x01, 0x0d, 0x03, 0x78, 0x56, 0x34, 0x12}},
 	}
 	for _, tt := range tests {
@@ -547,7 +547,7 @@ func TestNewQuerySystemOperatingInformationAppData(t *testing.T) {
 		args args
 		want []byte
 	}{
-		{name: "test total 10 time start 2021-07-02 00:00:00", args: args{controller: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x01}, total: 10, startTime: time.Unix(1625155200, 0)},
+		{name: "test total 10 time start 2021-07-02 00:00:00", args: args{controller: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 0x01}, total: 10, startTime: time.Unix(1625155200, 0)},
 			want: append([]byte{0x40, 0x01, 0x01, 0x01, 0x0a}, utils.Timestamp2Bytes(1625155200)...)},
 	}
 	for _, tt := range tests {
@@ -566,7 +566,7 @@ func TestNewQuerySystemSoftwareVersionAppData(t *testing.T) {
 		args args
 		want []byte
 	}{
-		{name: "test 1", args: args{controller: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x02}}, want: []byte{0x41, 0x01, 0x01, 0x02}},
+		{name: "test 1", args: args{controller: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 0x02}}, want: []byte{0x41, 0x01, 0x01, 0x02}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -586,11 +586,11 @@ func TestNewQuerySystemConfigureAppData(t *testing.T) {
 	}{
 		{name: "test empty", args: args{}, want: nil},
 		{name: "test one", args: args{controllers: []constant.Controller{
-			{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x03},
+			{Type: constant.FireAlarmSystemControllerType, Addr: 0x03},
 		}}, want: []byte{0x42, 0x01, 0x01, 0x03}},
 		{name: "test more", args: args{controllers: []constant.Controller{
-			{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x03},
-			{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 0x02},
+			{Type: constant.FireAlarmSystemControllerType, Addr: 0x03},
+			{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 0x02},
 		}}, want: []byte{0x42, 0x02, 0x01, 0x03, 0x0d, 0x02}},
 	}
 	for _, tt := range tests {
@@ -611,11 +611,11 @@ func TestNewQueryEquipmentConfigureAppData(t *testing.T) {
 	}{
 		{name: "test empty", args: args{}, want: nil},
 		{name: "test one", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.EquipmentTypeOfAlarmDevice},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.EquipmentTypeOfAlarmDevice},
 		}}, want: []byte{0x43, 0x01, 0x01, 0x01, 0x78, 0x56, 0x34, 0x12}},
 		{name: "test more", args: args{equipments: []constant.Equipment{
-			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.EquipmentTypeOfAlarmDevice},
-			{Ctrl: constant.Controller{Type: constant.ControllerTypeOfGasFireExtinguishingSystem, Addr: 0x03}, Addr: constant.EquipmentAddr(0x01020304), Type: constant.EquipmentTypeOfGasDetector},
+			{Ctrl: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 0x01}, Addr: constant.EquipmentAddr(0x12345678), Type: constant.EquipmentTypeOfAlarmDevice},
+			{Ctrl: constant.Controller{Type: constant.GasFireExtinguishingSystemControllerType, Addr: 0x03}, Addr: constant.EquipmentAddr(0x01020304), Type: constant.EquipmentTypeOfGasDetector},
 		}}, want: []byte{0x43, 0x02, 0x01, 0x01, 0x78, 0x56, 0x34, 0x12, 0x0d, 0x03, 0x04, 0x03, 0x02, 0x01}},
 	}
 	for _, tt := range tests {
@@ -634,7 +634,7 @@ func TestNewQuerySystemTimeAppData(t *testing.T) {
 		args args
 		want []byte
 	}{
-		{name: "test", args: args{controller: constant.Controller{Type: constant.ControllerTypeOfFireAlarmSystem, Addr: 0x03}}, want: []byte{0x44, 0x01, 0x01, 0x03}},
+		{name: "test", args: args{controller: constant.Controller{Type: constant.FireAlarmSystemControllerType, Addr: 0x03}}, want: []byte{0x44, 0x01, 0x01, 0x03}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

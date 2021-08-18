@@ -65,46 +65,46 @@ func (ct ControllerType) String() string {
 
 // define controller types 0 ~ 1
 const (
-	ControllerTypeOfGeneral         ControllerType = iota // general controller
-	ControllerTypeOfFireAlarmSystem                       // fire alarm controller
+	GeneralControllerType         ControllerType = iota // general controller
+	FireAlarmSystemControllerType                       // fire alarm controller
 )
 
 // define controller types 10 ~ 24
 const (
-	ControllerTypeOfFireLinkageSystem                                  ControllerType = 10 + iota // fire linkage controller
-	ControllerTypeOfFireCockSystem                                                                // fire cock system
-	ControllerTypeOfSprinklerSystem                                                               // sprinkler system
-	ControllerTypeOfGasFireExtinguishingSystem                                                    // gas fire extinguishing system
-	ControllerTypeOfPumpWaterSpraySystem                                                          // pump water spray system
-	ControllerTypeOfPressureWaterSpraySystem                                                      // pressure water spray system
-	ControllerTypeOfFoamFireExtinguishingSystem                                                   // foam fire extinguishing system
-	ControllerTypeOfDryPowderFireExtinguishingSystem                                              // dry powder fire extinguishing system
-	ControllerTypeOfSmokeExhaustSystem                                                            // smoke exhaust system
-	ControllerTypeOfFireDoorAndShutterSystem                                                      // door and shutter system
-	ControllerTypeOfFireLift                                                                      // fire lift
-	ControllerTypeOfEmergencyBroadcast                                                            // emergency broadcast
-	ControllerTypeOfFireEmergencyLightingAndEvacuationIndicationSystem                            // fire emergency lighting and evacuation indication system
-	ControllerTypeOfFirePowerSupply                                                               // firepower supply
-	ControllerTypeOfFireTelephone                                                                 // fire telephone
+	FireLinkageSystemControllerType                                  ControllerType = 10 + iota // fire linkage controller
+	FireCockSystemControllerType                                                                // fire cock system
+	SprinklerSystemControllerType                                                               // sprinkler system
+	GasFireExtinguishingSystemControllerType                                                    // gas fire extinguishing system
+	PumpWaterSpraySystemControllerType                                                          // pump water spray system
+	PressureWaterSpraySystemControllerType                                                      // pressure water spray system
+	FoamFireExtinguishingSystemControllerType                                                   // foam fire extinguishing system
+	DryPowderFireExtinguishingSystemControllerType                                              // dry powder fire extinguishing system
+	SmokeExhaustSystemControllerType                                                            // smoke exhaust system
+	FireDoorAndShutterSystemControllerType                                                      // door and shutter system
+	FireLiftControllerType                                                                      // fire lift
+	EmergencyBroadcastControllerType                                                            // emergency broadcast
+	FireEmergencyLightingAndEvacuationIndicationSystemControllerType                            // fire emergency lighting and evacuation indication system
+	FirePowerSupplyControllerType                                                               // firepower supply
+	FireTelephoneControllerType                                                                 // fire telephone
 )
 
 // ControllerTypeNames is declared all controller type names
 var ControllerTypeNames = map[ControllerType]string{
-	ControllerTypeOfGeneral:                                            "通用",
-	ControllerTypeOfFireAlarmSystem:                                    "火灾报警系统",
-	ControllerTypeOfFireLinkageSystem:                                  "消防联通控制器",
-	ControllerTypeOfFireCockSystem:                                     "消火栓系统",
-	ControllerTypeOfSprinklerSystem:                                    "自动喷水灭火系统",
-	ControllerTypeOfGasFireExtinguishingSystem:                         "气体灭火系统",
-	ControllerTypeOfPumpWaterSpraySystem:                               "水喷雾灭火系统(泵启动方式)",
-	ControllerTypeOfPressureWaterSpraySystem:                           "水喷雾灭火系统(压力容器启动方式)",
-	ControllerTypeOfFoamFireExtinguishingSystem:                        "泡沫灭火系统",
-	ControllerTypeOfDryPowderFireExtinguishingSystem:                   "干粉灭火系统",
-	ControllerTypeOfSmokeExhaustSystem:                                 "防烟排烟系统",
-	ControllerTypeOfFireDoorAndShutterSystem:                           "防火门及卷帘系统",
-	ControllerTypeOfFireLift:                                           "消防电梯",
-	ControllerTypeOfEmergencyBroadcast:                                 "消防应急广播",
-	ControllerTypeOfFireEmergencyLightingAndEvacuationIndicationSystem: "消防应急照明和疏散指示系统",
-	ControllerTypeOfFirePowerSupply:                                    "消防电源",
-	ControllerTypeOfFireTelephone:                                      "消防电话",
+	GeneralControllerType:                                            "General",
+	FireAlarmSystemControllerType:                                    "FireAlarmSystem",
+	FireLinkageSystemControllerType:                                  "FireLinkageSystem",
+	FireCockSystemControllerType:                                     "FireCockSystem",
+	SprinklerSystemControllerType:                                    "SprinklerSystem",
+	GasFireExtinguishingSystemControllerType:                         "GasFireExtinguishingSystem",
+	PumpWaterSpraySystemControllerType:                               "PumpWaterSpraySystem",
+	PressureWaterSpraySystemControllerType:                           "PressureWaterSpraySystem",
+	FoamFireExtinguishingSystemControllerType:                        "FoamFireExtinguishingSystem",
+	DryPowderFireExtinguishingSystemControllerType:                   "DryPowderFireExtinguishingSystem",
+	SmokeExhaustSystemControllerType:                                 "SmokeExhaustSystem",
+	FireDoorAndShutterSystemControllerType:                           "FireDoorAndShutterSystem",
+	FireLiftControllerType:                                           "FireLift",
+	EmergencyBroadcastControllerType:                                 "EmergencyBroadcast",
+	FireEmergencyLightingAndEvacuationIndicationSystemControllerType: "FireEmergencyLightingAndEvacuationIndicationSystem",
+	FirePowerSupplyControllerType:                                    "FirePowerSupply",
+	FireTelephoneControllerType:                                      "FireTelephone",
 }
