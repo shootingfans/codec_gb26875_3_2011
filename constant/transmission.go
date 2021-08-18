@@ -14,17 +14,17 @@ type (
 		Timestamp int64         // occurred timestamp
 	}
 
-	// TransmissionTimestamp 用户传输装置系统时间
+	// TransmissionTimestamp is transmission timestamp
 	TransmissionTimestamp struct {
 		Timestamp int64
 	}
 
-	// TransmissionVersion 用户传输装置系统版本
+	// TransmissionVersion is transmission version
 	TransmissionVersion struct {
 		Version Version
 	}
 
-	// TransmissionConfigure 用户传输装置配置信息
+	// TransmissionConfigure is transmission configure
 	TransmissionConfigure struct {
 		Configure string
 	}

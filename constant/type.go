@@ -105,27 +105,27 @@ var (
 )
 
 var stdStateNames = map[string]string{
-	"connection_opened":        "连接上线",
-	"connection_closed":        "断开连接",
-	"runtime_normal":           "正常运行",
-	"runtime_test":             "测试运行",
-	"alarming":                 "报警",
-	"fault":                    "故障",
-	"blocking":                 "屏蔽",
-	"supervise":                "监管",
-	"opened":                   "开启",
-	"closed":                   "关闭",
-	"feedback":                 "反馈",
-	"delay":                    "延迟",
-	"main_power_fault":         "主电故障",
-	"backup_power_fault":       "备电故障",
-	"bus_fault":                "总线故障",
-	"manual_running":           "手动运行",
-	"automatic_running":        "自动运行",
-	"configure_changed":        "配置改变",
-	"reset":                    "复位",
-	"communication_fault":      "通信信道故障",
-	"monitor_connection_fault": "监测连接线路故障",
+	"connection_opened":        "connection_opened",
+	"connection_closed":        "connection_closed",
+	"runtime_normal":           "runtime_normal",
+	"runtime_test":             "runtime_test",
+	"alarming":                 "alarming",
+	"fault":                    "fault",
+	"blocking":                 "blocking",
+	"supervise":                "supervise",
+	"opened":                   "opened",
+	"closed":                   "closed",
+	"feedback":                 "feedback",
+	"delay":                    "delay",
+	"main_power_fault":         "main_power_fault",
+	"backup_power_fault":       "backup_power_fault",
+	"bus_fault":                "bus_fault",
+	"manual_running":           "manual_running",
+	"automatic_running":        "automatic_running",
+	"configure_changed":        "configure_changed",
+	"reset":                    "reset",
+	"communication_fault":      "communication_fault",
+	"monitor_connection_fault": "monitor_connection_fault",
 }
 
 // StdStateName is standard state name
@@ -157,14 +157,14 @@ func StdOperationName(str string) string {
 }
 
 var stdOperationNames = map[string]string{
-	"reset_action":           "复位操作",
-	"mute_action":            "静音操作",
-	"manual_alarm_action":    "手动报警操作",
-	"cancel_alarm_action":    "警情清除操作",
-	"self_inspection_action": "自检操作",
-	"inspection_reply":       "查岗应答",
-	"test_action":            "测试操作",
-	"confirm_action":         "确认操作",
+	"reset_action":           "reset_action",
+	"mute_action":            "mute_action",
+	"manual_alarm_action":    "manual_alarm_action",
+	"cancel_alarm_action":    "cancel_alarm_action",
+	"self_inspection_action": "self_inspection_action",
+	"inspection_reply":       "inspection_reply",
+	"test_action":            "test_action",
+	"confirm_action":         "confirm_action",
 }
 
 // StdTransmissionStateFlagBitMapper is declare gb26875.3-2011 standard transmission states bits mapper
