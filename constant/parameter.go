@@ -59,63 +59,63 @@ func (pv ParameterValue) ToFloat(prec int) float64 {
 
 // define parameter types
 const (
-	ParameterTypeOfCounter          ParameterType = iota + 1 // event counter
-	ParameterTypeOfHeight                                    // height (0.01m)
-	ParameterTypeOfTemperature                               // temperature (0.1℃)
-	ParameterTypeOfMPressure                                 // MPa (0.1兆帕)
-	ParameterTypeOfKPressure                                 // kPa (0.1千帕)
-	ParameterTypeOfGasConcentration                          // gas concentration (0.1%LEL)
-	ParameterTypeOfSeconds                                   // seconds (1s)
-	ParameterTypeOfVoltage                                   // voltage (0.1V)
-	ParameterTypeOfElectricity                               // electricity (0.1A)
-	ParameterTypeOfFlow                                      // flow (0.1L/s)
-	ParameterTypeOfWindFlow                                  // wind flow (0.1m³/min)
-	ParameterTypeOfWindSpeed                                 // wind speed (m/s)
+	CounterParameterType          ParameterType = iota + 1 // event counter
+	HeightParameterType                                    // height (0.01m)
+	TemperatureParameterType                               // temperature (0.1℃)
+	MPressureParameterType                                 // MPa (0.1MPa)
+	KPressureParameterType                                 // kPa (0.1kpa)
+	GasConcentrationParameterType                          // gas concentration (0.1%LEL)
+	SecondsParameterType                                   // seconds (1s)
+	VoltageParameterType                                   // voltage (0.1V)
+	ElectricityParameterType                               // electricity (0.1A)
+	FlowParameterType                                      // flow (0.1L/s)
+	WindFlowParameterType                                  // wind flow (0.1m³/min)
+	WindSpeedParameterType                                 // wind speed (m/s)
 )
 
 // ParameterTypeNames is parameter type name
 var ParameterTypeNames = map[ParameterType]string{
-	ParameterTypeOfCounter:          "事件计数",
-	ParameterTypeOfHeight:           "高度 (0.01m)",
-	ParameterTypeOfTemperature:      "温度(0.1℃)",
-	ParameterTypeOfMPressure:        "压力(0.1兆帕)",
-	ParameterTypeOfKPressure:        "压力(0.1千帕)",
-	ParameterTypeOfGasConcentration: "气体浓度(0.1%LEL)",
-	ParameterTypeOfSeconds:          "秒(1s)",
-	ParameterTypeOfVoltage:          "电压(0.1V)",
-	ParameterTypeOfElectricity:      "电流(0.1A)",
-	ParameterTypeOfFlow:             "流量(0.1L/s)",
-	ParameterTypeOfWindFlow:         "风量(0.1m³/min)",
-	ParameterTypeOfWindSpeed:        "风速(m/s)",
+	CounterParameterType:          "Counter",
+	HeightParameterType:           "m (0.01m)",
+	TemperatureParameterType:      "℃ (0.1℃)",
+	MPressureParameterType:        "MPa (0.1MPa)",
+	KPressureParameterType:        "kpa (0.1kpa)",
+	GasConcentrationParameterType: "GasConcentration (0.1%LEL)",
+	SecondsParameterType:          "Second (1s)",
+	VoltageParameterType:          "Voltage (0.1V)",
+	ElectricityParameterType:      "Electricity (0.1A)",
+	FlowParameterType:             "Flow (0.1L/s)",
+	WindFlowParameterType:         "WindFlow (0.1m³/min)",
+	WindSpeedParameterType:        "WindSpeed (m/s)",
 }
 
 // ParameterTypeUnitNames is parameter unit description
 var ParameterTypeUnitNames = map[ParameterType]string{
-	ParameterTypeOfCounter:          "次",
-	ParameterTypeOfHeight:           "m",
-	ParameterTypeOfTemperature:      "℃",
-	ParameterTypeOfMPressure:        "MPa",
-	ParameterTypeOfKPressure:        "kPa",
-	ParameterTypeOfGasConcentration: "%",
-	ParameterTypeOfSeconds:          "s",
-	ParameterTypeOfVoltage:          "V",
-	ParameterTypeOfElectricity:      "A",
-	ParameterTypeOfFlow:             "L/s",
-	ParameterTypeOfWindFlow:         "m³/min",
-	ParameterTypeOfWindSpeed:        "m/s",
+	CounterParameterType:          "次",
+	HeightParameterType:           "m",
+	TemperatureParameterType:      "℃",
+	MPressureParameterType:        "MPa",
+	KPressureParameterType:        "kPa",
+	GasConcentrationParameterType: "%",
+	SecondsParameterType:          "s",
+	VoltageParameterType:          "V",
+	ElectricityParameterType:      "A",
+	FlowParameterType:             "L/s",
+	WindFlowParameterType:         "m³/min",
+	WindSpeedParameterType:        "m/s",
 }
 
 // ParameterInfoValue2StringHandler is convert func to value => string
 var ParameterInfoValue2StringHandler = map[ParameterType]func(value ParameterValue) string{
-	ParameterTypeOfHeight:           parameterValue2Float(2),
-	ParameterTypeOfTemperature:      parameterValue2Float(1),
-	ParameterTypeOfMPressure:        parameterValue2Float(1),
-	ParameterTypeOfKPressure:        parameterValue2Float(1),
-	ParameterTypeOfGasConcentration: parameterValue2Float(1),
-	ParameterTypeOfVoltage:          parameterValue2Float(1),
-	ParameterTypeOfElectricity:      parameterValue2Float(1),
-	ParameterTypeOfFlow:             parameterValue2Float(1),
-	ParameterTypeOfWindFlow:         parameterValue2Float(1),
+	HeightParameterType:           parameterValue2Float(2),
+	TemperatureParameterType:      parameterValue2Float(1),
+	MPressureParameterType:        parameterValue2Float(1),
+	KPressureParameterType:        parameterValue2Float(1),
+	GasConcentrationParameterType: parameterValue2Float(1),
+	VoltageParameterType:          parameterValue2Float(1),
+	ElectricityParameterType:      parameterValue2Float(1),
+	FlowParameterType:             parameterValue2Float(1),
+	WindFlowParameterType:         parameterValue2Float(1),
 }
 
 func parameterValue2Float(prec int) func(value ParameterValue) string {

@@ -211,7 +211,7 @@ func TestDecodeAppData(t *testing.T) {
 						Addr: constant.EquipmentAddr(0x04030201),
 					},
 					Info: constant.ParameterInfo{
-						Type:  constant.ParameterTypeOfTemperature,
+						Type:  constant.TemperatureParameterType,
 						Value: constant.ParameterValue(0x0320),
 					},
 					Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15}),
@@ -231,7 +231,7 @@ func TestDecodeAppData(t *testing.T) {
 						Addr: constant.EquipmentAddr(0x04030201),
 					},
 					Info: constant.ParameterInfo{
-						Type:  constant.ParameterTypeOfTemperature,
+						Type:  constant.TemperatureParameterType,
 						Value: constant.ParameterValue(0x0320),
 					},
 					Timestamp: utils.Bytes2Timestamp([]byte{0x04, 0x00, 0x09, 0x02, 0x07, 0x15})},
@@ -241,7 +241,7 @@ func TestDecodeAppData(t *testing.T) {
 						Type: constant.AlarmDeviceEquipmentType,
 						Addr: constant.EquipmentAddr(0x06050403),
 					}, Info: constant.ParameterInfo{
-						Type:  constant.ParameterTypeOfHeight,
+						Type:  constant.HeightParameterType,
 						Value: constant.ParameterValue(0x5001),
 					},
 					Timestamp: utils.Bytes2Timestamp([]byte{0x05, 0x00, 0x09, 0x02, 0x07, 0x15}),
