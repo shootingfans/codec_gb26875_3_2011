@@ -32,7 +32,7 @@ func TestReaderDecoder(t *testing.T) {
 						Timestamp: utils.Bytes2Timestamp([]byte{0x18, 0x0d, 0x11, 0x16, 0x0a, 0x14}),
 						Target:    0x010203040506,
 					})
-					assert.Equal(t, p.Action, constant.ActionOfAck)
+					assert.Equal(t, p.Action, constant.AckAction)
 				}
 			}
 		}()

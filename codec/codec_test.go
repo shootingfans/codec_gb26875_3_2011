@@ -20,7 +20,7 @@ func TestEncode(t *testing.T) {
 				Source:    0x000102030405,
 				Target:    0x060708090a0b,
 			},
-			Action: constant.ActionOfAck,
+			Action: constant.AckAction,
 		})
 		assert.Nil(t, err)
 		res := append(append([]byte{
@@ -38,7 +38,7 @@ func TestEncode(t *testing.T) {
 				Source:    0x000102030405,
 				Target:    0x060708090a0b,
 			},
-			Action:  constant.ActionOfRequest,
+			Action:  constant.RequestAction,
 			AppData: []byte{0x59, 0x01, 0x00},
 		})
 		assert.Nil(t, err)
@@ -95,7 +95,7 @@ func TestDecode(t *testing.T) {
 				Source:    0,
 				Target:    0x010203040506,
 			},
-			Action: constant.ActionOfSendData,
+			Action: constant.SendDataAction,
 			EquipmentStates: []constant.EquipmentStateInfo{
 				{
 					Equ: constant.Equipment{
@@ -117,17 +117,17 @@ func TestDecode(t *testing.T) {
 
 func TestDecodeAppData(t *testing.T) {
 	t.Run("test not enough data", func(t *testing.T) {
-		p := constant.Packet{AppData: []byte{0x01}, Action: constant.ActionOfSendData}
+		p := constant.Packet{AppData: []byte{0x01}, Action: constant.SendDataAction}
 		DecodeAppData(&p)
-		assert.EqualValues(t, p, constant.Packet{AppData: []byte{0x01}, Action: constant.ActionOfSendData})
+		assert.EqualValues(t, p, constant.Packet{AppData: []byte{0x01}, Action: constant.SendDataAction})
 	})
 	t.Run("test none decoder type", func(t *testing.T) {
-		p := constant.Packet{AppData: []byte{0xfe, 0x01}, Action: constant.ActionOfSendData}
+		p := constant.Packet{AppData: []byte{0xfe, 0x01}, Action: constant.SendDataAction}
 		DecodeAppData(&p)
-		assert.EqualValues(t, p, constant.Packet{AppData: []byte{0xfe, 0x01}, Action: constant.ActionOfSendData})
+		assert.EqualValues(t, p, constant.Packet{AppData: []byte{0xfe, 0x01}, Action: constant.SendDataAction})
 	})
 	t.Run("test registry custom decoder", func(t *testing.T) {
-		p := constant.Packet{AppData: []byte{0xfe, 0x01, 0x32}, Action: constant.ActionOfSendData}
+		p := constant.Packet{AppData: []byte{0xfe, 0x01, 0x32}, Action: constant.SendDataAction}
 		RegistryAppDecoder(constant.AppType(0xfe), AppDataDecoder(func(b []byte, packet *constant.Packet) {
 			packet.Others = append(packet.Others, b[0])
 		}))
