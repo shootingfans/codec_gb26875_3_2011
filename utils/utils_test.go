@@ -15,6 +15,11 @@ func TestB2S(t *testing.T) {
 	assert.Equal(t, utils.B2S(b), "asdf12345")
 }
 
+func TestS2B(t *testing.T) {
+	s := "123456"
+	assert.Equal(t, utils.S2B(s), []byte(s))
+}
+
 func TestEncodeGB18030(t *testing.T) {
 	b := []byte("这是一个转码测试")
 	assert.EqualValues(t, []byte{0xD5, 0xE2, 0xCA, 0xC7, 0xD2, 0xBB, 0xB8, 0xF6, 0xD7, 0xAA, 0xC2, 0xEB, 0xB2, 0xE2, 0xCA, 0xD4}, utils.EncodeGB18030(b))
@@ -58,4 +63,22 @@ func TestBytes2Timestamp(t *testing.T) {
 	tm := time.Date(2021, 1, 3, 15, 0, 0, 0, time.Local)
 	assert.Equal(t, utils.Bytes2Timestamp(by), tm.Unix())
 	assert.Equal(t, utils.Bytes2Timestamp(by[2:]), tm.Unix())
+}
+
+func BenchmarkB2S(b *testing.B) {
+	by := []byte("12345")
+	b.StartTimer()
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		utils.B2S(by)
+	}
+}
+
+func BenchmarkS2B(b *testing.B) {
+	s := "12345"
+	b.StartTimer()
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		utils.S2B(s)
+	}
 }
