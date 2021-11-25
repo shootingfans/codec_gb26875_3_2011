@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 )
 
 var listenOn = flag.String("listen", "127.0.0.1:8181", "listen address")
@@ -58,7 +59,8 @@ func processConnection(storage *sync.Map, conn net.Conn, wg *sync.WaitGroup) {
 				return
 			}
 			log.Printf("receive packet is empty?: %v\n", p.IsEmpty())
-			log.Printf("packet is %#v\n", p)
+			log.Printf("upload transmission timestamp count is %d", len(p.TransmissionTimestamps))
+			log.Printf("and timestamp is %s\n", time.Unix(p.TransmissionTimestamps[0].Timestamp, 0))
 		}
 	}
 }
