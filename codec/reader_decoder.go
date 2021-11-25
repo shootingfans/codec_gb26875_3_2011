@@ -33,23 +33,34 @@ func (r *readerDecoder) Close() error {
 
 func (r *readerDecoder) cron() {
 	defer close(r.C)
+	readlen := DefaultHeadLength + DefaultTailLength
 	for {
 		select {
 		case <-r.close:
 			return
 		default:
-			b, _ := r.reader.Peek(256)
-			p, n, err := Decode(b)
-			if err != nil {
-				if errors.Is(err, ErrPacketInvalid) || errors.Is(err, ErrPacketChecksumInvalid) {
-					r.reader.Discard(n)
+			b, gerr := r.reader.Peek(readlen)
+			if len(b) > 0 {
+				p, n, err := Decode(b)
+				if err != nil {
+					if errors.Is(err, ErrPacketNotEnough) {
+						readlen += readlen
+					}
+					if errors.Is(err, ErrPacketInvalid) || errors.Is(err, ErrPacketChecksumInvalid) {
+						r.reader.Discard(n)
+					}
+					continue
 				}
-				continue
+				r.reader.Discard(n)
+				readlen = DefaultTailLength + DefaultHeadLength
+				select {
+				case <-r.close:
+					return
+				case r.C <- p:
+				}
 			}
-			select {
-			case <-r.close:
+			if gerr == io.EOF {
 				return
-			case r.C <- p:
 			}
 		}
 	}
