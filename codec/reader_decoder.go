@@ -33,23 +33,21 @@ func (r *readerDecoder) Close() error {
 func (r *readerDecoder) cron() {
 	defer close(r.C)
 	for {
+		if atomic.LoadUint32(&r.closed) == 1 {
+			return
+		}
+		b, _ := r.reader.Peek(256)
+		p, n, err := Decode(b)
+		if err != nil {
+			if errors.Is(err, ErrPacketInvalid) || errors.Is(err, ErrPacketChecksumInvalid) {
+				_, _ = r.reader.Discard(n)
+			}
+			continue
+		}
 		select {
 		case <-r.close:
 			return
-		default:
-			b, _ := r.reader.Peek(256)
-			p, n, err := Decode(b)
-			if err != nil {
-				if errors.Is(err, ErrPacketInvalid) || errors.Is(err, ErrPacketChecksumInvalid) {
-					r.reader.Discard(n)
-				}
-				continue
-			}
-			select {
-			case <-r.close:
-				return
-			case r.C <- p:
-			}
+		case r.C <- p:
 		}
 	}
 }
