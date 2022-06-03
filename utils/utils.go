@@ -15,6 +15,12 @@ func B2S(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
 }
 
+// S2B use no copy convert string to byte slice
+func S2B(s string) []byte {
+	p := (*[2]uintptr)(unsafe.Pointer(&s))
+	return *(*[]byte)(unsafe.Pointer(&[3]uintptr{p[0], p[1], p[1]}))
+}
+
 // DecodeGB18030 is decode GB18030
 func DecodeGB18030(b []byte) []byte {
 	eDesc := make([]byte, 300)

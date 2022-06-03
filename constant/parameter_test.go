@@ -26,18 +26,18 @@ func TestParameterType_String(t *testing.T) {
 
 func TestParameterInfo_String(t *testing.T) {
 	testcases := map[constant.ParameterType]map[constant.ParameterValue]string{
-		constant.ParameterTypeOfCounter:          {1: "1 次", 10: "10 次", 35: "35 次"},
-		constant.ParameterTypeOfHeight:           {1: "0.01 m", 10: "0.1 m", 100: "1 m", 35: "0.35 m", 354: "3.54 m"},
-		constant.ParameterTypeOfTemperature:      {1: "0.1 ℃", 10: "1 ℃", 100: "10 ℃", -131: "-13.1 ℃", 361: "36.1 ℃"},
-		constant.ParameterTypeOfMPressure:        {1: "0.1 MPa", 10: "1 MPa", 131: "13.1 MPa", 141: "14.1 MPa"},
-		constant.ParameterTypeOfKPressure:        {1: "0.1 kPa", 10: "1 kPa", 131: "13.1 kPa", 141: "14.1 kPa"},
-		constant.ParameterTypeOfGasConcentration: {1: "0.1 %", 10: "1 %", 131: "13.1 %", 141: "14.1 %"},
-		constant.ParameterTypeOfSeconds:          {1: "1 s", 10: "10 s", 35: "35 s"},
-		constant.ParameterTypeOfVoltage:          {1: "0.1 V", 10: "1 V", 131: "13.1 V", 141: "14.1 V"},
-		constant.ParameterTypeOfElectricity:      {1: "0.1 A", 10: "1 A", 131: "13.1 A", 141: "14.1 A"},
-		constant.ParameterTypeOfFlow:             {1: "0.1 L/s", 10: "1 L/s", 131: "13.1 L/s", 141: "14.1 L/s"},
-		constant.ParameterTypeOfWindFlow:         {1: "0.1 m³/min", 10: "1 m³/min", 131: "13.1 m³/min", 141: "14.1 m³/min"},
-		constant.ParameterTypeOfWindSpeed:        {1: "1 m/s", 10: "10 m/s", 35: "35 m/s"},
+		constant.CounterParameterType:          {1: "1 次", 10: "10 次", 35: "35 次"},
+		constant.HeightParameterType:           {1: "0.01 m", 10: "0.1 m", 100: "1 m", 35: "0.35 m", 354: "3.54 m"},
+		constant.TemperatureParameterType:      {1: "0.1 ℃", 10: "1 ℃", 100: "10 ℃", -131: "-13.1 ℃", 361: "36.1 ℃"},
+		constant.MPressureParameterType:        {1: "0.1 MPa", 10: "1 MPa", 131: "13.1 MPa", 141: "14.1 MPa"},
+		constant.KPressureParameterType:        {1: "0.1 kPa", 10: "1 kPa", 131: "13.1 kPa", 141: "14.1 kPa"},
+		constant.GasConcentrationParameterType: {1: "0.1 %", 10: "1 %", 131: "13.1 %", 141: "14.1 %"},
+		constant.SecondsParameterType:          {1: "1 s", 10: "10 s", 35: "35 s"},
+		constant.VoltageParameterType:          {1: "0.1 V", 10: "1 V", 131: "13.1 V", 141: "14.1 V"},
+		constant.ElectricityParameterType:      {1: "0.1 A", 10: "1 A", 131: "13.1 A", 141: "14.1 A"},
+		constant.FlowParameterType:             {1: "0.1 L/s", 10: "1 L/s", 131: "13.1 L/s", 141: "14.1 L/s"},
+		constant.WindFlowParameterType:         {1: "0.1 m³/min", 10: "1 m³/min", 131: "13.1 m³/min", 141: "14.1 m³/min"},
+		constant.WindSpeedParameterType:        {1: "1 m/s", 10: "10 m/s", 35: "35 m/s"},
 	}
 	for tp, cases := range testcases {
 		t.Run("test parameter type "+tp.String(), func(t *testing.T) {

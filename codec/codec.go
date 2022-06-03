@@ -13,12 +13,16 @@ import (
 	"github.com/valyala/bytebufferpool"
 )
 
+// define errors
 var (
 	ErrPacketInvalid         = errors.New("packet invalid")          // packet is invalid
 	ErrPacketNotEnough       = errors.New("packet not enough")       // packet data not enough
 	ErrPacketChecksumInvalid = errors.New("packet checksum invalid") // packet checksum invalid
-	defaultCodec             = myCodec{}
+
 )
+
+// define default codec
+var defaultCodec = myCodec{}
 
 const (
 	HeadFlag          byte = 0x40 // packet header flag: 0x40 0x40
@@ -58,8 +62,10 @@ type AppDecoder interface {
 	Decode(b []byte, packet *constant.Packet)
 }
 
+// AppDataDecoder is decode app data func
 type AppDataDecoder func(b []byte, packet *constant.Packet)
 
+// Decode is decode app data
 func (a AppDataDecoder) Decode(b []byte, packet *constant.Packet) {
 	a(b, packet)
 }
@@ -67,19 +73,19 @@ func (a AppDataDecoder) Decode(b []byte, packet *constant.Packet) {
 var (
 	// typeDecoders define decoder of all app type
 	typeDecoders = map[constant.AppType]AppDecoder{
-		constant.AppTypeOfUploadSystemState:                      AppDataDecoder(decodeUploadSystemState),
-		constant.AppTypeOfUploadEquipmentState:                   AppDataDecoder(decodeUploadEquipmentState),
-		constant.AppTypeOfUploadEquipmentParameter:               AppDataDecoder(decodeUploadEquipmentParameter),
-		constant.AppTypeOfUploadSystemOperatingInformation:       AppDataDecoder(decodeUploadSystemOperatingInformation),
-		constant.AppTypeOfUploadSystemSoftwareVersion:            AppDataDecoder(decodeUploadSystemSoftwareVersion),
-		constant.AppTypeOfUploadSystemConfigure:                  AppDataDecoder(decodeUploadSystemConfigure),
-		constant.AppTypeOfUploadEquipmentConfigure:               AppDataDecoder(decodeUploadEquipmentConfigure),
-		constant.AppTypeOfUploadSystemTime:                       AppDataDecoder(decodeUploadSystemTime),
-		constant.AppTypeOfUploadTransmissionState:                AppDataDecoder(decodeUploadTransmissionState),
-		constant.AppTypeOfUploadTransmissionOperatingInformation: AppDataDecoder(decodeUploadTransmissionOperatingInformation),
-		constant.AppTypeOfUploadTransmissionSoftwareVersion:      AppDataDecoder(decodeUploadTransmissionSoftwareVersion),
-		constant.AppTypeOfUploadTransmissionConfigure:            AppDataDecoder(decodeUploadTransmissionConfigure),
-		constant.AppTypeOfUploadTransmissionTime:                 AppDataDecoder(decodeUploadTransmissionTime),
+		constant.UploadSystemStateAppType:                      AppDataDecoder(decodeUploadSystemState),
+		constant.UploadEquipmentStateAppType:                   AppDataDecoder(decodeUploadEquipmentState),
+		constant.UploadEquipmentParameterAppType:               AppDataDecoder(decodeUploadEquipmentParameter),
+		constant.UploadSystemOperatingInformationAppType:       AppDataDecoder(decodeUploadSystemOperatingInformation),
+		constant.UploadSystemSoftwareVersionAppType:            AppDataDecoder(decodeUploadSystemSoftwareVersion),
+		constant.UploadSystemConfigureAppType:                  AppDataDecoder(decodeUploadSystemConfigure),
+		constant.UploadEquipmentConfigureAppType:               AppDataDecoder(decodeUploadEquipmentConfigure),
+		constant.UploadSystemTimeAppType:                       AppDataDecoder(decodeUploadSystemTime),
+		constant.UploadTransmissionStateAppType:                AppDataDecoder(decodeUploadTransmissionState),
+		constant.UploadTransmissionOperatingInformationAppType: AppDataDecoder(decodeUploadTransmissionOperatingInformation),
+		constant.UploadTransmissionSoftwareVersionAppType:      AppDataDecoder(decodeUploadTransmissionSoftwareVersion),
+		constant.UploadTransmissionConfigureAppType:            AppDataDecoder(decodeUploadTransmissionConfigure),
+		constant.UploadTransmissionTimeAppType:                 AppDataDecoder(decodeUploadTransmissionTime),
 	}
 )
 
@@ -140,8 +146,10 @@ func (m myCodec) Decode(b []byte) (*constant.Packet, int, error) {
 			Version:   constant.Version(binary.BigEndian.Uint16(b[4:6])),
 			Timestamp: utils.Bytes2Timestamp(b[6:12]),
 		},
-		Action:  constant.Action(b[26]),
-		AppData: b[27 : packetLength-DefaultTailLength],
+		Action: constant.Action(b[26]),
+	}
+	if dataLength > 0 {
+		packet.AppData = b[27 : packetLength-DefaultTailLength]
 	}
 	address := make([]byte, 8)
 	copy(address[0:6], b[12:18])
@@ -149,7 +157,7 @@ func (m myCodec) Decode(b []byte) (*constant.Packet, int, error) {
 	copy(address[0:6], b[18:24])
 	packet.Header.Target = binary.LittleEndian.Uint64(address)
 	switch packet.Action {
-	case constant.ActionOfSendData, constant.ActionOfResponse:
+	case constant.SendDataAction, constant.ResponseAction:
 		DecodeAppData(&packet)
 	}
 	return &packet, packetLength, nil
@@ -346,7 +354,7 @@ func NewQuerySystemStateAppData(controllers ...constant.Controller) []byte {
 		return nil
 	}
 	b := make([]byte, 2+len(controllers)*2)
-	b[0], b[1] = byte(constant.AppTypeOfQuerySystemState), byte(len(controllers))
+	b[0], b[1] = byte(constant.QuerySystemStateAppType), byte(len(controllers))
 	for idx, controller := range controllers {
 		offset := idx * 2
 		b[2+offset], b[3+offset] = byte(controller.Type), byte(controller.Addr)
@@ -360,7 +368,7 @@ func NewQueryEquipmentStateAppData(equipments ...constant.Equipment) []byte {
 		return nil
 	}
 	b := make([]byte, 2+len(equipments)*6)
-	b[0], b[1] = byte(constant.AppTypeOfQueryEquipmentState), byte(len(equipments))
+	b[0], b[1] = byte(constant.QueryEquipmentStateAppType), byte(len(equipments))
 	for idx, equipment := range equipments {
 		offset := idx * 6
 		b[2+offset], b[3+offset] = byte(equipment.Ctrl.Type), byte(equipment.Ctrl.Addr)
@@ -375,7 +383,7 @@ func NewQueryEquipmentParameterAppData(equipments ...constant.Equipment) []byte 
 		return nil
 	}
 	b := make([]byte, 2+len(equipments)*6)
-	b[0], b[1] = byte(constant.AppTypeOfQueryEquipmentParameter), byte(len(equipments))
+	b[0], b[1] = byte(constant.QueryEquipmentParameterAppType), byte(len(equipments))
 	for idx, equipment := range equipments {
 		offset := idx * 6
 		b[2+offset], b[3+offset] = byte(equipment.Ctrl.Type), byte(equipment.Ctrl.Addr)
@@ -386,12 +394,12 @@ func NewQueryEquipmentParameterAppData(equipments ...constant.Equipment) []byte 
 
 // NewQuerySystemOperatingInformationAppData create a query system operating information app data request
 func NewQuerySystemOperatingInformationAppData(controller constant.Controller, total int, startTime time.Time) []byte {
-	return append([]byte{byte(constant.AppTypeOfQuerySystemOperatingInformation), 0x01, byte(controller.Type), byte(controller.Addr), byte(total)}, utils.Timestamp2Bytes(startTime.Unix())...)
+	return append([]byte{byte(constant.QuerySystemOperatingInformationAppType), 0x01, byte(controller.Type), byte(controller.Addr), byte(total)}, utils.Timestamp2Bytes(startTime.Unix())...)
 }
 
 // NewQuerySystemSoftwareVersionAppData create a query system software version app data request
 func NewQuerySystemSoftwareVersionAppData(controller constant.Controller) []byte {
-	return []byte{byte(constant.AppTypeOfQuerySystemSoftwareVersion), 0x01, byte(controller.Type), byte(controller.Addr)}
+	return []byte{byte(constant.QuerySystemSoftwareVersionAppType), 0x01, byte(controller.Type), byte(controller.Addr)}
 }
 
 // NewQuerySystemConfigureAppData create a query system configure app data request
@@ -400,7 +408,7 @@ func NewQuerySystemConfigureAppData(controllers ...constant.Controller) []byte {
 		return nil
 	}
 	b := make([]byte, 2+len(controllers)*2)
-	b[0], b[1] = byte(constant.AppTypeOfQuerySystemConfigure), byte(len(controllers))
+	b[0], b[1] = byte(constant.QuerySystemConfigureAppType), byte(len(controllers))
 	for idx, controller := range controllers {
 		offset := idx * 2
 		b[2+offset], b[3+offset] = byte(controller.Type), byte(controller.Addr)
@@ -414,7 +422,7 @@ func NewQueryEquipmentConfigureAppData(equipments ...constant.Equipment) []byte 
 		return nil
 	}
 	b := make([]byte, 2+len(equipments)*6)
-	b[0], b[1] = byte(constant.AppTypeOfQueryEquipmentConfigure), byte(len(equipments))
+	b[0], b[1] = byte(constant.QueryEquipmentConfigureAppType), byte(len(equipments))
 	for idx, equipment := range equipments {
 		offset := idx * 6
 		b[2+offset], b[3+offset] = byte(equipment.Ctrl.Type), byte(equipment.Ctrl.Addr)
@@ -425,45 +433,45 @@ func NewQueryEquipmentConfigureAppData(equipments ...constant.Equipment) []byte 
 
 // NewQuerySystemTimeAppData create a query system time app data request
 func NewQuerySystemTimeAppData(controller constant.Controller) []byte {
-	return []byte{byte(constant.AppTypeOfQuerySystemTime), 1, byte(controller.Type), byte(controller.Addr)}
+	return []byte{byte(constant.QuerySystemTimeAppType), 1, byte(controller.Type), byte(controller.Addr)}
 }
 
 // NewQueryTransmissionStateAppData create a query transmission state app data request
 func NewQueryTransmissionStateAppData() []byte {
-	return []byte{byte(constant.AppTypeOfQueryTransmissionState), 0x01, 0x00}
+	return []byte{byte(constant.QueryTransmissionStateAppType), 0x01, 0x00}
 }
 
 // NewQueryTransmissionOperatingInformationAppData create a query transmission operating information app data request
 func NewQueryTransmissionOperatingInformationAppData(total int, startTime time.Time) []byte {
-	return append([]byte{byte(constant.AppTypeOfQueryTransmissionOperatingInformation), 0x01, byte(total)}, utils.Timestamp2Bytes(startTime.Unix())...)
+	return append([]byte{byte(constant.QueryTransmissionOperatingInformationAppType), 0x01, byte(total)}, utils.Timestamp2Bytes(startTime.Unix())...)
 }
 
 // NewQueryTransmissionSoftwareVersionAppData create a query transmission software version app data request
 func NewQueryTransmissionSoftwareVersionAppData() []byte {
-	return []byte{byte(constant.AppTypeOfQueryTransmissionSoftwareVersion), 0x01, 0x00}
+	return []byte{byte(constant.QueryTransmissionSoftwareVersionAppType), 0x01, 0x00}
 }
 
 // NewQueryTransmissionConfigureAppData create a query transmission configure app data request
 func NewQueryTransmissionConfigureAppData() []byte {
-	return []byte{byte(constant.AppTypeOfQueryTransmissionConfigure), 0x01, 0x00}
+	return []byte{byte(constant.QueryTransmissionConfigureAppType), 0x01, 0x00}
 }
 
 // NewQueryTransmissionTimeAppData create a query transmission time app data request
 func NewQueryTransmissionTimeAppData() []byte {
-	return []byte{byte(constant.AppTypeOfQueryTransmissionTime), 0x01, 0x00}
+	return []byte{byte(constant.QueryTransmissionTimeAppType), 0x01, 0x00}
 }
 
 // NewInitializeTransmissionAppData create a initialize transmission app data request
 func NewInitializeTransmissionAppData() []byte {
-	return []byte{byte(constant.AppTypeOfInitializeTransmission), 0x01, 0x00}
+	return []byte{byte(constant.InitializeTransmissionAppType), 0x01, 0x00}
 }
 
 // NewSyncTransmissionTimeAppData create a sync transmission app data request
 func NewSyncTransmissionTimeAppData(syncTime time.Time) []byte {
-	return append([]byte{byte(constant.AppTypeOfSyncTransmissionTime), 0x01}, utils.Timestamp2Bytes(syncTime.Unix())...)
+	return append([]byte{byte(constant.SyncTransmissionTimeAppType), 0x01}, utils.Timestamp2Bytes(syncTime.Unix())...)
 }
 
 // NewInspectSentriesAppData create a inspect sentries app data request
 func NewInspectSentriesAppData(timeoutMinute int) []byte {
-	return []byte{byte(constant.AppTypeOfInspectSentries), 0x01, byte(timeoutMinute)}
+	return []byte{byte(constant.InspectSentriesAppType), 0x01, byte(timeoutMinute)}
 }
