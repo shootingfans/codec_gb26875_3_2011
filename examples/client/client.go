@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"flag"
-	"github.com/shootingfans/codec_gb26875_3_2011/utils"
 	"io"
 	"log"
 	"net"
@@ -12,6 +11,9 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/shootingfans/codec_gb26875_3_2011/codec"
+	"github.com/shootingfans/codec_gb26875_3_2011/utils"
 )
 
 var serverAddr = flag.String("server-host", "127.0.0.1:8181", "server address")
@@ -28,6 +30,8 @@ func main() {
 	defer conn.Close()
 	ticker := time.NewTicker(time.Second * 1)
 	buf := bytes.NewBuffer(make([]byte, 100))
+	cd := codec.NewReaderDecoder(conn)
+	defer cd.Close()
 	for {
 		select {
 		case s := <-sg:
@@ -57,6 +61,12 @@ func main() {
 			if n > 0 {
 				log.Printf("write %d bytes to server %#x", n, by[0:n])
 			}
+		case p, ok := <-cd.C:
+			if !ok {
+				return
+			}
+			log.Printf("receive packet is empty?: %v\n", p.IsEmpty())
+			log.Printf("recevie packet from server: action = %s\n", p.Action.Name())
 		}
 	}
 }
