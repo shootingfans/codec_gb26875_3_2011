@@ -149,7 +149,8 @@ func (m myCodec) Decode(b []byte) (*constant.Packet, int, error) {
 		Action: constant.Action(b[26]),
 	}
 	if dataLength > 0 {
-		packet.AppData = b[27 : packetLength-DefaultTailLength]
+		packet.AppData = make([]byte, dataLength)
+		copy(packet.AppData, b[27:packetLength-DefaultTailLength])
 	}
 	address := make([]byte, 8)
 	copy(address[0:6], b[12:18])
